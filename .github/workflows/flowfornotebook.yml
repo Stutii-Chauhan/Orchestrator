@@ -31,7 +31,7 @@ jobs:
           SUPABASE_PORT: ${{ secrets.SUPABASE_PORT }}
 
       - name: Run Cleaning Step 1
-        run: python product_price_to_cleaned.py
+        run: python product_price_to_cleaned_1.py
         env:
           SUPABASE_DB: ${{ secrets.SUPABASE_DB }}
           SUPABASE_USER: ${{ secrets.SUPABASE_USER }}
