@@ -3,11 +3,17 @@ name: Notebook Cleaning Flow
 on:
   push:
     paths:
-      - "product_price_to_cleaned_1"
-      - "cleaned_to_top1000_analysis_2"
+      - "product_price_to_cleaned_1.py"
+      - "cleaned_to_top1000_analysis_2.py"
+
 jobs:
   upload:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: .
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
