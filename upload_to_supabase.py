@@ -23,3 +23,4 @@ for file in os.listdir("."):
         print(f" Uploaded: {table_name}")
 
 #fixed some host name
+#still didn't work
