@@ -220,38 +220,41 @@ try:
 except Exception as e:
     print(f"❌ Failed cleaning product_price: {e}")
 
-print("🧾 Columns in DataFrame:", df.columns.tolist())
+# print("🧾 Columns in DataFrame:", df.columns.tolist())
+
+['product_url', 'product_name', 'product_price', 'model_number', 'asin', 'brand_name', 'product_code', 'brand']
 
 # # # df.head(25)
-# brand_code_counts = df.groupby("brand")["product code"].nunique()
+brand_code_counts = df.groupby("brand")["product_code"].nunique()
 
-# # To see the result as a DataFrame:
-# brand_code_counts_df = brand_code_counts.reset_index(name="Unique Code Count")
-# #print(brand_code_counts_df)
+# To see the result as a DataFrame:
+brand_code_counts_df = brand_code_counts.reset_index(name="Unique Code Count")
 
-# titan_edge_df = df[df["brand"].str.upper() == "TITAN EDGE"]
+#print(brand_code_counts_df)
 
-# # Get the unique product codes for Titan Edge
-# titan_edge_codes = titan_edge_df["product code"].unique()
+titan_edge_df = df[df["brand"].str.upper() == "TITAN EDGE"]
 
-# print(titan_edge_codes)
+# Get the unique product codes for Titan Edge
+titan_edge_codes = titan_edge_df["product_code"].unique()
 
-# grouped = df.groupby(["Product Name", "product code"]).size().reset_index(name="Count")
+print(titan_edge_codes)
 
-# # Filter groups where count > 1 (i.e. duplicate rows)
-# duplicates = grouped[grouped["Count"] > 1]
+grouped = df.groupby(["product_name", "product_code"]).size().reset_index(name="Count")
 
-# print(duplicates)
+# Filter groups where count > 1 (i.e. duplicate rows)
+duplicates = grouped[grouped["Count"] > 1]
 
-# df = df.drop_duplicates(subset=["Product Name", "product code"], keep="first")
+print(duplicates)
 
-# df.loc[
-#     (df["Product Name"] == "Titan Edge Men’s Designer Watch – Slim, Quartz, Water Resistant") &
-#     (df["product code"].isnull()),
-#     "Product Code"
-# ] = "1683NL01"
+df = df.drop_duplicates(subset=["product_name", "product_code"], keep="first")
 
-# df = df.drop(columns=["Model Number", "ASIN ","Brand Name"])
+df.loc[
+    (df["product_name"] == "Titan Edge Men’s Designer Watch – Slim, Quartz, Water Resistant") &
+    (df["product_code"].isnull()),
+    "product_code"
+] = "1683NL01"
 
-# #df.to_sql("product_price_cleaned", con=engine, if_exists="replace", index=False)
-# #print("✅ Cleaned product_price saved as product_price_cleaned")
+df = df.drop(columns=["model_number", "asin ","brand_name"])
+
+df.to_sql("product_price_cleaned", con=engine, if_exists="replace", index=False)
+print("✅ Cleaned product_price saved as product_price_cleaned")
