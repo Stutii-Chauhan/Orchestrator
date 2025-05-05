@@ -34,3 +34,6 @@ for file in os.listdir("."):
             print(f"✅ Uploaded: {table_name}")
         except Exception as e:
             print(f"❌ Failed to upload {file}: {e}")
+
+
+#IPv4 from IPv6
