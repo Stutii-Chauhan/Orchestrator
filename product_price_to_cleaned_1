@@ -17,7 +17,7 @@ engine = create_engine(f"postgresql://{user}:{password}@{host}:{port}/{db}")
 
 import pandas as pd
 import re
-# -----------------------------
+# ------
 # PART 1: Product Code Extraction
 # -----------------------------
 
