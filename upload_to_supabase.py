@@ -21,3 +21,5 @@ for file in os.listdir("."):
         table_name = file.lower().replace(".xlsx", "").replace(".csv", "").replace(" ", "_")
         df.to_sql(table_name, engine, if_exists="replace", index=False)
         print(f" Uploaded: {table_name}")
+
+#check to make the code run
