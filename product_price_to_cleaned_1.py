@@ -3,6 +3,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 from urllib.parse import quote_plus
 
+
 # -------------------------------------
 # DB Setup
 # -------------------------------------
