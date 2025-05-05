@@ -22,4 +22,4 @@ for file in os.listdir("."):
         df.to_sql(table_name, engine, if_exists="replace", index=False)
         print(f" Uploaded: {table_name}")
 
-#check to make the code run
+#fixed some host name
