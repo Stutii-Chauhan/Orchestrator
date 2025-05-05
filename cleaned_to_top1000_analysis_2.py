@@ -261,15 +261,6 @@ all_sku_table = df_cleaned.pivot_table(
 all_sku_table = all_sku_table.astype({col: 'int' for col in all_sku_table.columns if col != "brand"})
 
 
-with pd.ExcelWriter(save_path, engine="xlsxwriter") as writer:
-    men_product_table.to_excel(writer, sheet_name="Men - Product Count", index=False)
-    women_product_table.to_excel(writer, sheet_name="Women - Product Count", index=False)
-    men_code_table.to_excel(writer, sheet_name="Men - SKU Count", index=False)
-    women_code_table.to_excel(writer, sheet_name="Women - SKU Count", index=False)
-    all_product_table.to_excel(writer, sheet_name="All - Product Count", index=False)
-    all_sku_table.to_excel(writer, sheet_name="All - SKU Count", index=False)
-
-
 men_product_table.to_sql("Men - Product Count", con=engine, if_exists="replace", index=False)
 women_product_table.to_sql("Women - Product Count",con=engine, if_exists="replace", index=False)
 men_code_table.to_sql("Men - SKU Count",con=engine, if_exists="replace", index=False)
