@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from sqlalchemy import create_engine
-from urllib.parse import quote_plus  # ✅ Needed for password encoding.
+from urllib.parse import quote_plus  # ✅ Needed for password encoding
 
 db = os.environ["SUPABASE_DB"]
 user = os.environ["SUPABASE_USER"]
