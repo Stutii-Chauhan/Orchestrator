@@ -220,36 +220,38 @@ try:
 except Exception as e:
     print(f"❌ Failed cleaning product_price: {e}")
 
-# # df.head(25)
-brand_code_counts = df.groupby("Brand")["Product Code"].nunique()
+print(df)
 
-# To see the result as a DataFrame:
-brand_code_counts_df = brand_code_counts.reset_index(name="Unique Code Count")
-#print(brand_code_counts_df)
+# # # df.head(25)
+# brand_code_counts = df.groupby("Brand")["Product Code"].nunique()
 
-titan_edge_df = df[df["Brand"].str.upper() == "TITAN EDGE"]
+# # To see the result as a DataFrame:
+# brand_code_counts_df = brand_code_counts.reset_index(name="Unique Code Count")
+# #print(brand_code_counts_df)
 
-# Get the unique product codes for Titan Edge
-titan_edge_codes = titan_edge_df["Product Code"].unique()
+# titan_edge_df = df[df["Brand"].str.upper() == "TITAN EDGE"]
 
-print(titan_edge_codes)
+# # Get the unique product codes for Titan Edge
+# titan_edge_codes = titan_edge_df["Product Code"].unique()
 
-grouped = df.groupby(["Product Name", "Product Code"]).size().reset_index(name="Count")
+# print(titan_edge_codes)
 
-# Filter groups where count > 1 (i.e. duplicate rows)
-duplicates = grouped[grouped["Count"] > 1]
+# grouped = df.groupby(["Product Name", "Product Code"]).size().reset_index(name="Count")
 
-print(duplicates)
+# # Filter groups where count > 1 (i.e. duplicate rows)
+# duplicates = grouped[grouped["Count"] > 1]
 
-df = df.drop_duplicates(subset=["Product Name", "Product Code"], keep="first")
+# print(duplicates)
 
-df.loc[
-    (df["Product Name"] == "Titan Edge Men’s Designer Watch – Slim, Quartz, Water Resistant") &
-    (df["Product Code"].isnull()),
-    "Product Code"
-] = "1683NL01"
+# df = df.drop_duplicates(subset=["Product Name", "Product Code"], keep="first")
 
-df = df.drop(columns=["Model Number", "ASIN ","Brand Name"])
+# df.loc[
+#     (df["Product Name"] == "Titan Edge Men’s Designer Watch – Slim, Quartz, Water Resistant") &
+#     (df["Product Code"].isnull()),
+#     "Product Code"
+# ] = "1683NL01"
 
-#df.to_sql("product_price_cleaned", con=engine, if_exists="replace", index=False)
-#print("✅ Cleaned product_price saved as product_price_cleaned")
+# df = df.drop(columns=["Model Number", "ASIN ","Brand Name"])
+
+# #df.to_sql("product_price_cleaned", con=engine, if_exists="replace", index=False)
+# #print("✅ Cleaned product_price saved as product_price_cleaned")
