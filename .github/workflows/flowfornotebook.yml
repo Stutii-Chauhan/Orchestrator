@@ -6,8 +6,14 @@ on:
       - "product_price_to_cleaned_1.py"
       - "cleaned_to_top1000_analysis_2.py"
 
+  workflow_run:
+    workflows: ["Upload to Supabase"]
+    types:
+      - completed
+
 jobs:
   upload:
+    if: github.event_name == 'push' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
 
     steps:
