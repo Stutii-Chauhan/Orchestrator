@@ -6,7 +6,7 @@ from urllib.parse import quote_plus
 
 # -------------------------------------
 # DB Setup
-# -------------------------------------
+# ------------------------------------
 db = os.environ["SUPABASE_DB"]
 user = os.environ["SUPABASE_USER"]
 raw_password = os.environ["SUPABASE_PASSWORD"]
