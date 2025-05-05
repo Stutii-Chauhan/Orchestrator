@@ -125,27 +125,17 @@ def extract_product_code(product_name):
 
     return final_token.upper() if final_token else None
 
+import pandas as pd
+
 def extract_brand(product_name):
-    """
-    Extracts the brand from the product name using a predefined mapping.
-
-    Special Rules:
-      - If "xylys" is found anywhere (case-insensitive), returns "Titan XYLYS".
-      - If the product name contains only "tommy" (and not "hilfiger"), it returns "Tommy Hilfiger".
-
-    For all other product names, if a matching keyword is found in the product name,
-    the corresponding brand is returned. If no known brand is found, "Others" is returned.
-    """
     if pd.isna(product_name):
         return None
 
     product_name_lower = product_name.lower()
 
-    # Special rule for XYLYS.
     if "xylys" in product_name_lower:
         return "Titan XYLYS"
 
-    # Define mapping of keywords to full brand names.
     brand_mapping = {
         "tommy hilfiger": "Tommy Hilfiger",
         "tommy": "Tommy Hilfiger",
@@ -191,7 +181,6 @@ def extract_brand(product_name):
         "guy laroche": "Guy Laroche",
         "carlos philip": "Carlos Philip",
         "adidas": "Adidas",
-        #"gc analog": "GC Analog",
         "movado": "Movado",
         "daniel klein": "Daniel Klein",
         "sonata": "Sonata",
@@ -201,31 +190,35 @@ def extract_brand(product_name):
         "mini cooper": "MINI Cooper",
         "hanowa": "Hanowa",
         "charles-hubert": "Charles-Hubert",
-        "GC":"GC"
+        "gc": "GC"
     }
 
-    # Sort mapping keys by length descending to match more specific names first.
     sorted_keys = sorted(brand_mapping.keys(), key=lambda x: len(x), reverse=True)
     for key in sorted_keys:
-        if key.lower() in product_name_lower:
+        if key in product_name_lower:
             return brand_mapping[key]
-    # For any product that does not contain one of the specified brands.
     return "Others"
 
-print(df)
-# -------------------------------------
-# CLEANING: product_price
-# -------------------------------------
-# try:
-#     df = pd.read_sql_table("product_price", con=engine)
-#     df = df.dropna(subset=["Product Name", "Product Price"])
-#     df["Product Code"] = df["Product Name"].apply(extract_product_code)
-#     df["Brand"] = df["Product Name"].apply(extract_brand)
+try:
+    df = pd.read_sql_table("product_price", con=engine)
 
-#     #df.to_sql("product_price_output", con=engine, if_exists="replace", index=False)
-#     #print("✅ Cleaned product_price saved as product_price_output")
-# except Exception as e:
-#     print(f"❌ Failed cleaning product_price: {e}")
+    # Normalize column names
+    df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
+
+    # Ensure required columns exist
+    if "product_name" not in df.columns or "product_price" not in df.columns:
+        raise KeyError("Required columns 'Product Name' and/or 'Product Price' not found.")
+
+    df = df.dropna(subset=["product_name", "product_price"])
+    df["product_code"] = df["product_name"].apply(extract_product_code)
+    df["brand"] = df["product_name"].apply(extract_brand)
+
+    # Save if needed
+    # df.to_sql("product_price_output", con=engine, if_exists="replace", index=False)
+    # print("✅ Cleaned product_price saved as product_price_output")
+
+except Exception as e:
+    print(f"❌ Failed cleaning product_price: {e}")
 
 # # df.head(25)
 # brand_code_counts = df.groupby("Brand")["Product Code"].nunique()
