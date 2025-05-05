@@ -43,7 +43,7 @@ df_cleaned = df_cleaned[~mask]
 # Reset index (optional but clean)
 df_cleaned.reset_index(drop=True, inplace=True)
 
-print(f"Cleaned DataFrame. Remaining rows: {len(df_cleaned)}")
+#print(f"Cleaned DataFrame. Remaining rows: {len(df_cleaned)}")
 
 #Men and Women
 def categorize_gender(product_name):
@@ -82,54 +82,54 @@ def categorize_gender(product_name):
 df_cleaned["gender_category"] = df_cleaned["product_name"].apply(categorize_gender)
 print(df_cleaned["gender_category"].value_counts())
 
-df_cleaned["product_price"] = df_cleaned["product_price"].astype(str)
-df_cleaned["product_price"] = df_cleaned["product_price"].str.replace("₹", "", regex=False)
-df_cleaned["product_price"] = df_cleaned["product_price"].str.replace(",", "", regex=False).str.strip()
+# df_cleaned["product_price"] = df_cleaned["product_price"].astype(str)
+# df_cleaned["product_price"] = df_cleaned["product_price"].str.replace("₹", "", regex=False)
+# df_cleaned["product_price"] = df_cleaned["product_price"].str.replace(",", "", regex=False).str.strip()
 
-# Extract only the first valid numeric price (between 3 and 6 digits)
-df_cleaned["product_price"] = df_cleaned["product_price"].str.extract(r'(\d{3,6})')
+# # Extract only the first valid numeric price (between 3 and 6 digits)
+# df_cleaned["product_price"] = df_cleaned["product_price"].str.extract(r'(\d{3,6})')
 
-# Convert to numeric safely
-df_cleaned["product_price"] = pd.to_numeric(df_cleaned["product_price"], errors="coerce")
+# # Convert to numeric safely
+# df_cleaned["product_price"] = pd.to_numeric(df_cleaned["product_price"], errors="coerce")
 
-##SKUs
+# ##SKUs
 
-# Step 1: Clean the 'product_price' column
-df_cleaned["product_price"] = (
-    df_cleaned["product_price"]
-    .astype(str)
-    .str.replace("₹", "", regex=False)
-    .str.replace(",", "", regex=False)
-    .str.extract(r"(\d{4,6})")[0]
-)
-df_cleaned["product_price"] = pd.to_numeric(df_cleaned["product_price"], errors="coerce")
+# # Step 1: Clean the 'product_price' column
+# df_cleaned["product_price"] = (
+#     df_cleaned["product_price"]
+#     .astype(str)
+#     .str.replace("₹", "", regex=False)
+#     .str.replace(",", "", regex=False)
+#     .str.extract(r"(\d{4,6})")[0]
+# )
+# df_cleaned["product_price"] = pd.to_numeric(df_cleaned["product_price"], errors="coerce")
 
-# Step 2: Define bins and labels
-bins = [10000, 11000, 12000, 13000, 14000, 15000, 17500, 20000, 22500, 25000]
-labels = [
-    "10 - 11k", "11k-12k", "12k-13k", "13k-14k", "14k-15k",
-    "15k-17.5k", "17.5-20k", "20k-22.5k", "22.5-25k"
-]
-df_cleaned["price_bin"] = pd.cut(df_cleaned["product_price"], bins=bins, labels=labels, right=False)
+# # Step 2: Define bins and labels
+# bins = [10000, 11000, 12000, 13000, 14000, 15000, 17500, 20000, 22500, 25000]
+# labels = [
+#     "10 - 11k", "11k-12k", "12k-13k", "13k-14k", "14k-15k",
+#     "15k-17.5k", "17.5-20k", "20k-22.5k", "22.5-25k"
+# ]
+# df_cleaned["price_bin"] = pd.cut(df_cleaned["product_price"], bins=bins, labels=labels, right=False)
 
-# Step 3: Filter brands
-target_brands = ["Titan", "Titan Edge", "Fossil"]
-df_filtered = df_cleaned[df_cleaned["brand"].isin(target_brands)]
+# # Step 3: Filter brands
+# target_brands = ["Titan", "Titan Edge", "Fossil"]
+# df_filtered = df_cleaned[df_cleaned["brand"].isin(target_brands)]
 
-# Step 4: Separate for Men and Women
-df_men = df_filtered[df_filtered["gender_category"] == "Men"]
-df_women = df_filtered[df_filtered["gender_category"] == "Women"]
+# # Step 4: Separate for Men and Women
+# df_men = df_filtered[df_filtered["gender_category"] == "Men"]
+# df_women = df_filtered[df_filtered["gender_category"] == "Women"]
 
-# Step 5: Group and pivot
-sku_table_men = df_men.groupby(["price_bin", "brand"]).size().unstack(fill_value=0).reindex(labels)
-sku_table_women = df_women.groupby(["price_bin", "brand"]).size().unstack(fill_value=0).reindex(labels)
+# # Step 5: Group and pivot
+# sku_table_men = df_men.groupby(["price_bin", "brand"]).size().unstack(fill_value=0).reindex(labels)
+# sku_table_women = df_women.groupby(["price_bin", "brand"]).size().unstack(fill_value=0).reindex(labels)
 
 
-df_men.to_sql("sku_table_men", con=engine, if_exists="replace", index=False)
-print("✅ Cleaned product_price saved as sku_table_men")
+# df_men.to_sql("sku_table_men", con=engine, if_exists="replace", index=False)
+# print("✅ Cleaned product_price saved as sku_table_men")
 
-df_women.to_sql("sku_table_women", con=engine, if_exists="replace", index=False)
-print("✅ Cleaned product_price saved as sku_table_women")
+# df_women.to_sql("sku_table_women", con=engine, if_exists="replace", index=False)
+# print("✅ Cleaned product_price saved as sku_table_women")
 
 
 def categorize_price(price):
@@ -319,9 +319,9 @@ df_cleaned["Position"] = df_cleaned.index + 1  # Rank starts from 1
 best_rank_by_brand = df_cleaned.groupby("brand")["Position"].min().reset_index()
 best_rank_by_brand.columns = ["brand", "Best Rank (First Appearance)"]
 
-#all_sku_table.to_sql"All - SKU Count", con=engine, if_exists="replace", index=False)
+#all_sku_table.to_sql("All - SKU Count", con=engine, if_exists="replace", index=False)
 
-top_1000_product_count.to_sqll("Top 1000 - Product Count", con=engine, if_exists="replace", index=False)
+top_1000_product_count.to_sql("Top 1000 - Product Count", con=engine, if_exists="replace", index=False)
 top_1000_sku_count.to_sql("Top 1000 - SKU Count", con=engine, if_exists="replace", index=False)
 men_product_count.to_sql("Men - Product Count", con=engine, if_exists="replace", index=False)
 men_sku_count.to_sql("Men - SKU Count", con=engine, if_exists="replace", index=False)
