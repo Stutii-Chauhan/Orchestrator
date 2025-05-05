@@ -1,3 +1,10 @@
+name: Notebook Cleaning Flow
+
+on:
+  push:
+    paths:
+      - "product_price_to_cleaned_1"
+      - "cleaned_to_top1000_analysis_2"
 jobs:
   upload:
     runs-on: ubuntu-latest
