@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from urllib.parse import quote_plus
 
 
-# -------------------------------------
+# ------------------------------------
 # DB Setup
 # ------------------------------------
 db = os.environ["SUPABASE_DB"]
