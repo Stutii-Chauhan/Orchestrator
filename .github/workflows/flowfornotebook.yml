@@ -5,6 +5,8 @@ on:
     paths:
       - "product_price_to_cleaned_1.py"
       - "cleaned_to_top1000_analysis_2.py"
+      - "Separating_top100_pricewise.py"
+      - "Attributes_top100.py"
 
   workflow_run:
     workflows: ["Upload to Supabase"]
@@ -49,6 +51,24 @@ jobs:
 
       - name: Run Cleaning Step 2
         run: python cleaned_to_top1000_analysis_2.py
+        env:
+          SUPABASE_DB: ${{ secrets.SUPABASE_DB }}
+          SUPABASE_USER: ${{ secrets.SUPABASE_USER }}
+          SUPABASE_PASSWORD: ${{ secrets.SUPABASE_PASSWORD }}
+          SUPABASE_HOST: ${{ secrets.SUPABASE_HOST }}
+          SUPABASE_PORT: ${{ secrets.SUPABASE_PORT }}
+
+      - name: Run Cleaning Step 3
+        run: python Separating_top100_pricewise.py
+        env:
+          SUPABASE_DB: ${{ secrets.SUPABASE_DB }}
+          SUPABASE_USER: ${{ secrets.SUPABASE_USER }}
+          SUPABASE_PASSWORD: ${{ secrets.SUPABASE_PASSWORD }}
+          SUPABASE_HOST: ${{ secrets.SUPABASE_HOST }}
+          SUPABASE_PORT: ${{ secrets.SUPABASE_PORT }}
+
+      - name: Run Cleaning Step 4
+        run: python Attributes_top100.py
         env:
           SUPABASE_DB: ${{ secrets.SUPABASE_DB }}
           SUPABASE_USER: ${{ secrets.SUPABASE_USER }}
