@@ -131,10 +131,8 @@ def extract_brand_conditionally(row):
         return "Titan XYLYS"
     elif "titan edge" in product_name:
         return "Titan Edge"
-    elif "nebula" in product_name:
-        return "Titan Nebula"
-    elif "ruckus" in product_name:
-        return "Titan Raga Ruckus"
+    elif "titan raga" in product_name:
+        return "Titan Raga"
     else:
         return row["brand"]  # keep existing brand
 
