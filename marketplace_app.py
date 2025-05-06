@@ -11,7 +11,7 @@ model = genai.GenerativeModel("gemini-2.0-flash-lite")
 # ---- Supabase Connection ----
 DB = st.secrets["SUPABASE_DB"]
 USER = st.secrets["SUPABASE_USER"]
-PASSWORD = st.secrets["SUPABASE_PASSWORD"]
+PASSWORD = "14MUMb@!99!"
 HOST = st.secrets["SUPABASE_HOST"]
 PORT = st.secrets["SUPABASE_PORT"]
 engine = create_engine(f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}")
