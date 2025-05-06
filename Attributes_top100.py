@@ -83,7 +83,7 @@ for i, spec_dict in enumerate(parsed_specs):
 final_df = pd.DataFrame(structured_rows, columns=final_columns)
 
 # Save the final output
-final_df.to_sql("Final_Watch_Dataset_Men", con=engine, if_exists="replace", index=False)
+final_df.to_sql("Final_Watch_Dataset_Men_output", con=engine, if_exists="replace", index=False)
 
 # Load your CSV file (change path if needed)
 df = pd.read_sql_table("top_100_women", con=engine)
@@ -148,4 +148,4 @@ for i, spec_dict in enumerate(parsed_specs):
 final_df = pd.DataFrame(structured_rows, columns=final_columns)
 
 # Save the final output
-final_df.to_sql("Final_Watch_Dataset_Women", con=engine, if_exists="replace", index=False)
+final_df.to_sql("Final_Watch_Dataset_Women_output", con=engine, if_exists="replace", index=False)
