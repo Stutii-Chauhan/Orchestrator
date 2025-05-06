@@ -256,5 +256,5 @@ df.loc[
 
 df = df.drop(columns=["model_number", "asin","brand_name"])
 
-df.to_sql("product_price_cleaned", con=engine, if_exists="replace", index=False)
+df.to_sql("product_price_cleaned_output", con=engine, if_exists="replace", index=False)
 print("✅ Cleaned product_price saved as product_price_cleaned")
