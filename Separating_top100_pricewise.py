@@ -211,7 +211,7 @@ brand_price_matrix_men = brand_price_matrix_men.sort_values(by="total", ascendin
 brand_price_matrix_women = df_women.pivot_table(
     index="brand",
     columns="price range",
-    values="product name",
+    values="product_name",
     aggfunc="count",
     fill_value=0
 ).reset_index()
