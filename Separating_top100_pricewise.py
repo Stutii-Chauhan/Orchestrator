@@ -16,7 +16,7 @@ password = quote_plus(raw_password)
 
 engine = create_engine(f"postgresql://{user}:{password}@{host}:{port}/{db}")
 
-#df_cleaned = pd.read_sql_table("product_price_cleaned", con=engine)
+#df_cleaned = pd.read_sql_table("product_price_cleaned_output", con=engine)
 
 # PART 1: Product Code Extraction
 # -----------------------------
@@ -225,6 +225,6 @@ brand_price_matrix_women = brand_price_matrix_women.reindex(columns=[col for col
 
 brand_price_matrix_women = brand_price_matrix_women.sort_values(by="total", ascending=False).reset_index(drop=True)
 
-brand_price_matrix_men.to_sql("men_price_range_top100", con=engine, if_exists="replace", index=False)
-brand_price_matrix_women.to_sql("women_price_range_top100", con=engine, if_exists="replace", index=False)
+brand_price_matrix_men.to_sql("men_price_range_top100_output", con=engine, if_exists="replace", index=False)
+brand_price_matrix_women.to_sql("women_price_range_top100_output", con=engine, if_exists="replace", index=False)
 
