@@ -44,30 +44,30 @@ def generate_sql(user_query):
     ])
 
     table_guidance = """
-The tables contain watches data from Amazon across brands.
-Refer the user’s question to the right table based on these rules:
-
-- Use `product_price_cleaned_output` for general product counts, price, names, and brand queries.
-- Use `All - Product Count_output` to get number of products per brand in each price band.
-- Use `All - SKU Count_output` to find how many SKUs exist for each brand in each price range.
-- Use `Top 1000 - Product Count_output` to see how many products from a brand are in top 1000.
-- Use `Top 1000 - SKU Count_output` for top SKUs in top 1000.
-- Use `Men - Product Count_output` and `Women - Product Count_output` to compare male vs female collections.
-- Use `Best Rank_All_output` to find a brand’s best appearance rank.
-- Use `men_price_range_top100_output` and `women_price_range_top100_output` to break down top 100 by price band and gender and also when asked the best watch.
-- Use `Final_Watch_Dataset_Men_output` and 'Final_Watch_Dataset_Men_output' to find top-selling watches for men or women respectively based on the order it appears in the table.
-- Use `Final_Watch_Dataset_Men_output` and `Final_Watch_Dataset_Women_output` if question mentions ratings, discount, or specific product specs for men or women.
-Examples:
-- "Which is the best selling watch for men?" → Use Final_Watch_Dataset_Men_output, select based on the order it appears in the table.
-- "Top 3 women watches by discount?" → Use Final_Watch_Dataset_Women_output, order by Discount DESC.
-
-Instructions:
-- Return ONLY the SQL query.
-- DO NOT explain anything.
-- If you don’t know which table to use, return exactly: INVALID_QUERY
-- Always wrap table names in double quotes (e.g., "Final_Watch_Dataset_Men_output")
-"""
-
+    The tables contain watches data from Amazon across brands.
+    Refer the user’s question to the right table based on these rules:
+    
+    - Use `product_price_cleaned_output` for general product counts, price, names, and brand queries.
+    - Use `All - Product Count_output` to get number of products per brand in each price band.
+    - Use `All - SKU Count_output` to find how many SKUs exist for each brand in each price range.
+    - Use `Top 1000 - Product Count_output` to see how many products from a brand are in top 1000.
+    - Use `Top 1000 - SKU Count_output` for top SKUs in top 1000.
+    - Use `Men - Product Count_output` and `Women - Product Count_output` to compare male vs female collections.
+    - Use `Best Rank_All_output` to find a brand’s best appearance rank.
+    - Use `men_price_range_top100_output` and `women_price_range_top100_output` to break down top 100 by price band and gender and also when asked the best watch.
+    - Use `Final_Watch_Dataset_Men_output` and `Final_Watch_Dataset_Women_output` to find top-selling watches for men or women respectively based on the order it appears in the table.
+    - Use `Final_Watch_Dataset_Men_output` and `Final_Watch_Dataset_Women_output` if question mentions ratings, discount, or specific product specs for men or women.
+    
+    Examples:
+    - "Which is the best selling watch for men?" → Use Final_Watch_Dataset_Men_output, select based on the order it appears in the table.
+    - "Top 3 women watches by discount?" → Use Final_Watch_Dataset_Women_output, order by Discount DESC.
+    
+    Instructions:
+    - Return ONLY the SQL query.
+    - DO NOT explain anything.
+    - If you don’t know which table to use, return exactly: INVALID_QUERY
+    - Always wrap table names in double quotes (e.g., "Final_Watch_Dataset_Men_output")
+    """
     prompt = f"""
 You are a SQL expert agent. Your job is to pick the right table and generate SQL based on the user's question.
 
