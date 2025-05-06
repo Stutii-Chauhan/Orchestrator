@@ -96,8 +96,8 @@ Answer only with the chart type, no explanation.
         return "none"
 
 # ---- Streamlit UI ----
-st.set_page_config("Supabase Data Explorer with Gemini", layout="wide")
-st.title("🔍 Supabase Data Explorer with Gemini")
+st.set_page_config("Marketplace Analyzer", layout="wide")
+st.title("Marketplace Analyzer")
 
 user_question = st.text_input("Ask a question about your data:")
 
