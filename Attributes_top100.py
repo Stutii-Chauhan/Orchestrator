@@ -128,18 +128,30 @@ def parse_specs(spec_str):
 # Apply parsing to 'Specs' column
 parsed_specs = df['specs'].apply(parse_specs)
 
+# Mapping from raw dataframe column names to final schema column names
+column_mapping = {
+    "url": "URL",
+    "brand": "Brand",
+    "product_name": "Product Name",
+    "model_number": "Model Number",  # optional if you already extracted it
+    "price": "Price",
+    "ratings": "Ratings",
+    "discount": "Discount",
+    "imageurl": "ImageURL"
+}
+
 # Build structured rows from parsed specs
 structured_rows = []
 for i, spec_dict in enumerate(parsed_specs):
     row_data = {}
 
-    # Start with non-spec data
-    for col in ["url", "brand", "product_name", "price", "imageurl", "ratings", "discount"]:
-        row_data[col] = df.at[i, col] if col in df.columns else ""
+    # Start with non-spec data using mapped column names
+    for raw_col, final_col in column_mapping.items():
+        row_data[final_col] = df.at[i, raw_col] if raw_col in df.columns else ""
 
-    # Add spec-based fields
+    # Add spec-based fields (only if not already filled from above)
     for col in final_columns:
-        if col not in row_data:
+        if col not in row_data or not row_data[col]:
             row_data[col] = spec_dict.get(col, "")
 
     structured_rows.append(row_data)
@@ -147,5 +159,5 @@ for i, spec_dict in enumerate(parsed_specs):
 # Create the final structured DataFrame
 final_df = pd.DataFrame(structured_rows, columns=final_columns)
 
-# Save the final output
+# Save the final output to Supabase
 final_df.to_sql("Final_Watch_Dataset_Women_output", con=engine, if_exists="replace", index=False)
