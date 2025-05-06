@@ -132,8 +132,8 @@ def extract_product_code(product_name):
 
 df_men = pd.read_sql_table("top_100_men_excel", con=engine)
 
-# Drop rows where either "product_name" or "Price" is null.
-df_men = df_men.dropna(subset=["product_name", "Price"])
+# Drop rows where either "product_name" or "price" is null.
+df_men = df_men.dropna(subset=["product_name", "price"])
 
 # Update the DataFrame with extracted Product Code and Brand.
 df_men["product_code"] = df_men["product_name"].apply(extract_product_code)
@@ -147,8 +147,8 @@ df_men["product_code"] = df_men["product_name"].apply(extract_product_code)
 df_women = pd.read_sql_table("top_100_women_excel", con=engine)
 
 
-# Drop rows where either "product_name" or "Price" is null.
-df_women = df_women.dropna(subset=["product_name", "Price"])
+# Drop rows where either "product_name" or "price" is null.
+df_women = df_women.dropna(subset=["product_name", "price"])
 
 # Update the DataFrame with extracted Product Code and Brand.
 df_women["product_code"] = df_women["product_name"].apply(extract_product_code)
