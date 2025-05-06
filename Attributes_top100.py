@@ -61,7 +61,7 @@ def parse_specs(spec_str):
     return specs
 
 # Apply parsing to 'Specs' column
-parsed_specs = df['Specs'].apply(parse_specs)
+parsed_specs = df['specs'].apply(parse_specs)
 
 # Build structured rows from parsed specs
 structured_rows = []
