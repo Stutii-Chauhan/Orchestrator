@@ -20,8 +20,10 @@ PASSWORD = quote_plus(st.secrets["SUPABASE_PASSWORD"])  # Handles special chars 
 HOST = st.secrets["SUPABASE_HOST"]
 PORT = st.secrets["SUPABASE_PORT"]
 
-# Create engine from formatted connection string
-engine = create_engine(f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}")
+connection_string = f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}"
+
+# ✅ Correct usage
+engine = create_engine(connection_string)
 
 
 # ---- Table Metadata ----
