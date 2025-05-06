@@ -126,6 +126,7 @@ def extract_product_code(product_name):
 
 def extract_brand_conditionally(row):
     product_name = str(row["product_name"]).lower()
+    brand = str(row["brand"]).lower()
 
     if "xylys" in product_name:
         return "Titan XYLYS"
