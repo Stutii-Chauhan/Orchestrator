@@ -16,7 +16,7 @@ password = quote_plus(raw_password)
 
 engine = create_engine(f"postgresql://{user}:{password}@{host}:{port}/{db}")
 
-df_cleaned = pd.read_sql_table("product_price_cleaned", con=engine)
+df_cleaned = pd.read_sql_table("product_price_cleaned_output", con=engine)
 
 brand_code_counts = df_cleaned.groupby("brand")["product_code"].nunique()
 
@@ -261,12 +261,12 @@ all_sku_table = df_cleaned.pivot_table(
 all_sku_table = all_sku_table.astype({col: 'int' for col in all_sku_table.columns if col != "brand"})
 
 
-men_product_table.to_sql("Men - Product Count", con=engine, if_exists="replace", index=False)
-women_product_table.to_sql("Women - Product Count",con=engine, if_exists="replace", index=False)
-men_code_table.to_sql("Men - SKU Count",con=engine, if_exists="replace", index=False)
-women_code_table.to_sql("Women - SKU Count",con=engine, if_exists="replace", index=False)
-all_product_table.to_sql("All - Product Count", con=engine, if_exists="replace", index=False)
-all_sku_table.to_sql("All - SKU Count", con=engine, if_exists="replace", index=False)
+men_product_table.to_sql("Men - Product Count_output", con=engine, if_exists="replace", index=False)
+women_product_table.to_sql("Women - Product Count_output",con=engine, if_exists="replace", index=False)
+men_code_table.to_sql("Men - SKU Count_output",con=engine, if_exists="replace", index=False)
+women_code_table.to_sql("Women - SKU Count_output",con=engine, if_exists="replace", index=False)
+all_product_table.to_sql("All - Product Count_output", con=engine, if_exists="replace", index=False)
+all_sku_table.to_sql("All - SKU Count_output", con=engine, if_exists="replace", index=False)
 
 
 # Total product count per brand
@@ -319,15 +319,15 @@ df_cleaned["Position"] = df_cleaned.index + 1  # Rank starts from 1
 best_rank_by_brand = df_cleaned.groupby("brand")["Position"].min().reset_index()
 best_rank_by_brand.columns = ["brand", "Best Rank (First Appearance)"]
 
-#all_sku_table.to_sql("All - SKU Count", con=engine, if_exists="replace", index=False)
+#all_sku_table.to_sql("All - SKU Count_output", con=engine, if_exists="replace", index=False)
 
-top_1000_product_count.to_sql("Top 1000 - Product Count", con=engine, if_exists="replace", index=False)
-top_1000_sku_count.to_sql("Top 1000 - SKU Count", con=engine, if_exists="replace", index=False)
-men_product_count.to_sql("Men - Product Count", con=engine, if_exists="replace", index=False)
-men_sku_count.to_sql("Men - SKU Count", con=engine, if_exists="replace", index=False)
-women_product_count.to_sql("Women - Product Count", con=engine, if_exists="replace", index=False)
-women_sku_count.to_sql("Women - SKU Count", con=engine, if_exists="replace", index=False)
-best_rank_by_brand.to_sql("Best Rank_All", con=engine, if_exists="replace", index=False)
+top_1000_product_count.to_sql("Top 1000 - Product Count_output", con=engine, if_exists="replace", index=False)
+top_1000_sku_count.to_sql("Top 1000 - SKU Count_output", con=engine, if_exists="replace", index=False)
+men_product_count.to_sql("Men - Product Count_output", con=engine, if_exists="replace", index=False)
+men_sku_count.to_sql("Men - SKU Count_output", con=engine, if_exists="replace", index=False)
+women_product_count.to_sql("Women - Product Count_output", con=engine, if_exists="replace", index=False)
+women_sku_count.to_sql("Women - SKU Count_output", con=engine, if_exists="replace", index=False)
+best_rank_by_brand.to_sql("Best Rank_All_output", con=engine, if_exists="replace", index=False)
 
 
 
