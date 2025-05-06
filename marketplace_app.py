@@ -10,21 +10,13 @@ genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 model = genai.GenerativeModel("gemini-2.0-flash-lite")
 
 # ---- Supabase Connection ----
-
-
-# ---- Supabase Connection ----
-# Correctly encode password for URL
 DB = st.secrets["SUPABASE_DB"]
 USER = st.secrets["SUPABASE_USER"]
-PASSWORD = quote_plus(st.secrets["SUPABASE_PASSWORD"])  # Handles special chars like @ or !
+PASSWORD = quote_plus(st.secrets["SUPABASE_PASSWORD"])  # Handles @, !, etc.
 HOST = st.secrets["SUPABASE_HOST"]
 PORT = st.secrets["SUPABASE_PORT"]
-
 connection_string = f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}"
-
-# ✅ Correct usage
 engine = create_engine(connection_string)
-
 
 # ---- Table Metadata ----
 TABLE_SCHEMAS = {
@@ -97,11 +89,19 @@ if user_question:
         st.warning("Couldn't understand or match your question to a known table.")
         st.stop()
 
-    st.code(sql_query, language="sql")
+    # 🧽 Clean SQL from markdown if LLM wrapped it in triple backticks
+    clean_query = (
+        sql_query.strip()
+        .replace("```sql", "")
+        .replace("```", "")
+        .strip()
+    )
+
+    st.code(clean_query, language="sql")
 
     if st.button("▶️ Run Query"):
         try:
-            df = pd.read_sql_query(sql_query, engine)
+            df = pd.read_sql_query(clean_query, engine)
             st.success("Query executed successfully!")
             st.dataframe(df)
 
