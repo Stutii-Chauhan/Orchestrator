@@ -128,8 +128,6 @@ def extract_product_code(product_name):
 # PART 3: Apply to Dataset and Save
 # -----------------------------
 
-# Read the Excel file.
-
 df_men = pd.read_sql_table("top_100_men_excel", con=engine)
 
 # Drop rows where either "product_name" or "price" is null.
@@ -137,7 +135,7 @@ df_men = df_men.dropna(subset=["product_name", "price"])
 
 # Update the DataFrame with extracted Product Code and Brand.
 df_men["product_code"] = df_men["product_name"].apply(extract_product_code)
-
+df_men["brand"] = df_men.apply(extract_brand_conditionally, axis=1)
 
 # -----------------------------
 # PART 3: Apply to Dataset and Save
@@ -152,6 +150,21 @@ df_women = df_women.dropna(subset=["product_name", "price"])
 
 # Update the DataFrame with extracted Product Code and Brand.
 df_women["product_code"] = df_women["product_name"].apply(extract_product_code)
+df_women["brand"] = df_women.apply(extract_brand_conditionally, axis=1)
+
+def extract_brand_conditionally(row):
+    product_name = str(row["product_name"]).lower()
+
+    if "xylys" in product_name:
+        return "Titan XYLYS"
+    elif "titan edge" in product_name:
+        return "Titan Edge"
+    elif "nebula" in product_name:
+        return "Titan Nebula"
+    elif "ruckus" in product_name:
+        return "Titan Raga Ruckus"
+    else:
+        return row["brand"]  # keep existing brand
 
 def categorize_price(price):
     if pd.isna(price):
