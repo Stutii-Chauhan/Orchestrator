@@ -54,7 +54,7 @@ Refer the user’s question to the right table based on these rules:
 - Use `Top 1000 - SKU Count_output` for top SKUs in top 1000.
 - Use `Men - Product Count_output` and `Women - Product Count_output` to compare male vs female collections.
 - Use `Best Rank_All_output` to find a brand’s best appearance rank.
-- Use `men_price_range_top100_output` and `women_price_range_top100_output` to break down top 100 by price band and gender.
+- Use `men_price_range_top100_output` and `women_price_range_top100_output` to break down top 100 by price band and gender and also when asked the best watch.
 - Use `Final_Watch_Dataset_Men_output` and `Final_Watch_Dataset_Women_output` if question mentions ratings, discount, or specific product specs for men or women.
 
 Instructions:
