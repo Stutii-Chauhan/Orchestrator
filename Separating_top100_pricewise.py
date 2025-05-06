@@ -187,7 +187,7 @@ def categorize_price(price):
 
 df_women["price_range"] = df_women["price"].apply(categorize_price)
 
-# Pivot table for product count per brand per price range
+# Pivot table for product count per brand per price_range
 brand_price_matrix_men = df_men.pivot_table(
     index="brand",
     columns="price_range",
@@ -207,10 +207,10 @@ brand_price_matrix_men = brand_price_matrix_men.sort_values(by="total", ascendin
 # View result
 #print(brand_price_matrix_men.head())
 
-# Pivot table for product count per brand per price range
+# Pivot table for product count per brand per price_range
 brand_price_matrix_women = df_women.pivot_table(
     index="brand",
-    columns="price range",
+    columns="price_range",
     values="product_name",
     aggfunc="count",
     fill_value=0
