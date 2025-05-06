@@ -1,10 +1,12 @@
+import sqlite3
 import streamlit as st
 import pandas as pd
 import google.generativeai as genai
-from sqlalchemy import create_engine
 import re
+import numpy as np
+from scipy import stats
 
-# ---- Gemini Setup ----
+# ---- Gemini setup ----
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 model = genai.GenerativeModel("gemini-2.0-flash-lite")
 
@@ -15,62 +17,53 @@ def query_gemini(prompt):
     except Exception as e:
         return f"Gemini LLM failed: {e}"
 
-# ---- Supabase DB Setup ----
-DB = st.secrets["SUPABASE_DB"]
-USER = st.secrets["SUPABASE_USER"]
-PASSWORD = st.secrets["SUPABASE_PASSWORD"]
-HOST = st.secrets["SUPABASE_HOST"]
-PORT = st.secrets["SUPABASE_PORT"]
-engine = create_engine(f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}")
+def generate_gemini_sql(user_query):
+    TABLE_SCHEMAS = {
+        "product_price_cleaned_output": ["product_url", "product_name", "product_price", "product_code", "brand"],
+        "All - Product Count_output": ["brand", "10k–15k", "15k–25k", "25k–40k", "40k+", "<10k"],
+        "All - SKU Count_output": ["brand", "10k–15k", "15k–25k", "25k–40k", "40k+", "<10k"],
+        "Top 1000 - Product Count_output": ["brand", "Top 1000 Product Count"],
+        "Top 1000 - SKU Count_output": ["brand", "Top 1000 SKU Count"],
+        "Men - Product Count_output": ["brand", "Men - Product Count"],
+        "Men - SKU Count_output": ["brand", "Men - SKU Count"],
+        "Women - Product Count_output": ["brand", "Women - Product Count"],
+        "Women - SKU Count_output": ["brand", "Women - SKU Count"],
+        "Best Rank_All_output": ["brand", "Best Rank (First Appearance)"],
+        "men_price_range_top100_output": ["brand", "10k–15k", "15k–25k", "25k–40k", "40k+", "total"],
+        "women_price_range_top100_output": ["brand", "10k–15k", "15k–25k", "25k–40k", "40k+", "total"],
+        "Final_Watch_Dataset_Men_output": ["URL", "Brand", "Product Name", "Model Number", "Price", "Ratings", "Discount", "Band Colour", "Band Material", "Band Width", "Case Diameter", "Case Material", "Case Thickness", "Dial Colour", "Crystal Material", "Case Shape", "Movement", "Water Resistance Depth", "Special Features", "ImageURL"],
+        "Final_Watch_Dataset_Women_output": ["URL", "Brand", "Product Name", "Model Number", "Price", "Ratings", "Discount", "Band Colour", "Band Material", "Band Width", "Case Diameter", "Case Material", "Case Thickness", "Dial Colour", "Crystal Material", "Case Shape", "Movement", "Water Resistance Depth", "Special Features", "ImageURL"]
+    }
 
-# ---- Streamlit UI ----
-st.title("🔍 Supabase Data Explorer with Gemini")
-tables = [
-    "product_price_cleaned_output",
-    "All - Product Count_output",
-    "All - SKU Count_output",
-    "Top 1000 - Product Count_output",
-    "Top 1000 - SKU Count_output",
-    "Men - Product Count_output",
-    "Men - SKU Count_output",
-    "Women - Product Count_output",
-    "Women - SKU Count_output",
-    "Best Rank_All_output",
-    "men_price_range_top100_output",
-    "women_price_range_top100_output",
-    "Final_Watch_Dataset_Men_output",
-    "Final_Watch_Dataset_Women_output"
-]
+    schema_text = "\n".join([
+        f"- {table}: columns = [{', '.join(columns)}]"
+        for table, columns in TABLE_SCHEMAS.items()
+    ])
 
-selected_table = st.selectbox("Select a table to explore", tables)
+    prompt = f"""
+You are an expert SQL generator.
 
-# Load and preview data
-@st.cache_data(show_spinner=False)
-def load_data(table_name):
-    return pd.read_sql_table(table_name, con=engine)
+Below are the available tables and their exact column names:
+{schema_text}
 
-df = load_data(selected_table)
-st.subheader("📄 Data Preview")
-st.dataframe(df.head())
+Instructions:
+- Select the most appropriate table for the user’s question.
+- ONLY use the columns exactly as written for the selected table.
+- DO NOT add or assume extra columns or values.
+- DO NOT explain the query — just return raw SQL.
+- If the question doesn’t map to any table, return exactly: INVALID_QUERY
 
-# User query
-st.subheader("🤖 Ask a question about this data")
-user_query = st.text_input("What do you want to know?")
-if user_query:
-    prompt = f"Generate a SQL query for a PostgreSQL table named {selected_table} with the following schema:\n"
-    prompt += ", ".join([f"{col}" for col in df.columns]) + "\n\nUser Request: " + user_query
-    sql = query_gemini(prompt)
-    st.code(sql, language="sql")
+User question: {user_query}
 
-    if "SELECT" in sql.upper():
-        try:
-            result_df = pd.read_sql_query(sql, con=engine)
-            st.dataframe(result_df)
-        except Exception as e:
-            st.error(f"Error running query: {e}")
-    else:
-        st.warning("Gemini did not generate a valid SQL query.")
+SQL Query:
+"""
+    try:
+        response = model.generate_content(prompt)
+        return response.text.strip()
+    except Exception as e:
+        return f"Gemini LLM failed: {e}"
 
+#Chart generator
 
 def get_chart_type_from_llm(user_query):
     prompt = f"""
@@ -110,9 +103,17 @@ st.title("Auto Agent")
 # 1. Connect to the SQLite database and load the products table
 @st.cache_data
 def load_data():
-    conn = sqlite3.connect('mydatabase.db')
-    df = pd.read_sql_query("SELECT * FROM products", conn)
-    conn.close()
+    # Load secrets (already defined in your secrets.toml)
+    DB = st.secrets["SUPABASE_DB"]
+    USER = st.secrets["SUPABASE_USER"]
+    PASSWORD = st.secrets["SUPABASE_PASSWORD"]
+    HOST = st.secrets["SUPABASE_HOST"]
+    PORT = st.secrets["SUPABASE_PORT"]
+    
+    # SQLAlchemy engine for Supabase
+    engine = create_engine(f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}")
+    df = pd.read_sql_query("SELECT * FROM products", engine)
+    engine.close()
     return df
 
 df = load_data()
@@ -190,8 +191,8 @@ if user_question:
                         if "select" not in clean_query.lower():
                             st.warning("That doesn't seem like a valid question. Please rephrase your question.")
                         else:
-                            conn = sqlite3.connect('mydatabase.db')
-                            result_df = pd.read_sql_query(clean_query, conn)
+                            #conn = sqlite3.connect('mydatabase.db')
+                            result_df = pd.read_sql_query(clean_query, engine)
                             st.success("Query executed successfully!")
                             st.dataframe(result_df)
 
@@ -305,7 +306,7 @@ if user_question:
                         st.error(f"SQL Execution Failed: {query_error}")
                     finally:
                         try:
-                            conn.close()
+                            engine.close()
                         except:
                             pass
 
