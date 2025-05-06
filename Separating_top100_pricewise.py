@@ -124,6 +124,20 @@ def extract_product_code(product_name):
 
     return final_token.upper() if final_token else None
 
+def extract_brand_conditionally(row):
+    product_name = str(row["product_name"]).lower()
+
+    if "xylys" in product_name:
+        return "Titan XYLYS"
+    elif "titan edge" in product_name:
+        return "Titan Edge"
+    elif "nebula" in product_name:
+        return "Titan Nebula"
+    elif "ruckus" in product_name:
+        return "Titan Raga Ruckus"
+    else:
+        return row["brand"]  # keep existing brand
+
 # -----------------------------
 # PART 3: Apply to Dataset and Save
 # -----------------------------
@@ -152,19 +166,6 @@ df_women = df_women.dropna(subset=["product_name", "price"])
 df_women["product_code"] = df_women["product_name"].apply(extract_product_code)
 df_women["brand"] = df_women.apply(extract_brand_conditionally, axis=1)
 
-def extract_brand_conditionally(row):
-    product_name = str(row["product_name"]).lower()
-
-    if "xylys" in product_name:
-        return "Titan XYLYS"
-    elif "titan edge" in product_name:
-        return "Titan Edge"
-    elif "nebula" in product_name:
-        return "Titan Nebula"
-    elif "ruckus" in product_name:
-        return "Titan Raga Ruckus"
-    else:
-        return row["brand"]  # keep existing brand
 
 def categorize_price(price):
     if pd.isna(price):
