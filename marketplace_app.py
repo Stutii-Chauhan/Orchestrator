@@ -15,11 +15,12 @@ model = genai.GenerativeModel("gemini-2.0-flash-lite")
 # ---- Supabase Connection ----
 DB = st.secrets["SUPABASE_DB"]
 USER = st.secrets["SUPABASE_USER"]
-PASSWORD = quote_plus("14WUMb@!99!") 
+PASSWORD = quote_plus(st.secrets["SUPABASE_PASSWORD"])  # Automatically encodes special chars
 HOST = st.secrets["SUPABASE_HOST"]
 PORT = st.secrets["SUPABASE_PORT"]
 
 engine = create_engine(f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}")
+
 
 
 # ---- Table Metadata ----
