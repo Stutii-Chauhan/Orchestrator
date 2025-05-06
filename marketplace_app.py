@@ -55,7 +55,11 @@ Refer the user’s question to the right table based on these rules:
 - Use `Men - Product Count_output` and `Women - Product Count_output` to compare male vs female collections.
 - Use `Best Rank_All_output` to find a brand’s best appearance rank.
 - Use `men_price_range_top100_output` and `women_price_range_top100_output` to break down top 100 by price band and gender and also when asked the best watch.
+- Use `Final_Watch_Dataset_Men_output` and 'Final_Watch_Dataset_Men_output' to find top-selling watches for men or women respectively based on the order it appears in the table.
 - Use `Final_Watch_Dataset_Men_output` and `Final_Watch_Dataset_Women_output` if question mentions ratings, discount, or specific product specs for men or women.
+Examples:
+- "Which is the best selling watch for men?" → Use Final_Watch_Dataset_Men_output, select based on the order it appears in the table.
+- "Top 3 women watches by discount?" → Use Final_Watch_Dataset_Women_output, order by Discount DESC.
 
 Instructions:
 - Return ONLY the SQL query.
