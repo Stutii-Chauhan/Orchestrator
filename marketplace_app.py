@@ -38,17 +38,36 @@ TABLE_SCHEMAS = {
 
 # ---- LLM SQL Generator ----
 def generate_sql(user_query):
-    schema_desc = "\n".join([f"- {table}: [{', '.join(cols)}]" for table, cols in TABLE_SCHEMAS.items()])
-    prompt = f"""
-You are a SQL expert. Use the correct table based on the question.
+    schema_desc = "\n".join([
+        f"- {table}: [{', '.join(cols)}]"
+        for table, cols in TABLE_SCHEMAS.items()
+    ])
 
-Available Tables and Columns:
-{schema_desc}
+    table_guidance = """
+Refer the user’s question to the right table based on these rules:
+
+- Use `product_price_cleaned_output` for general product counts, price, names, and brand queries.
+- Use `All - Product Count_output` to get number of products per brand in each price band.
+- Use `All - SKU Count_output` to find how many SKUs exist for each brand in each price range.
+- Use `Top 1000 - Product Count_output` to see how many products from a brand are in top 1000.
+- Use `Top 1000 - SKU Count_output` for top SKUs in top 1000.
+- Use `Men - Product Count_output` and `Women - Product Count_output` to compare male vs female collections.
+- Use `Best Rank_All_output` to find a brand’s best appearance rank.
+- Use `men_price_range_top100_output` and `women_price_range_top100_output` to break down top 100 by price band and gender.
+- Use `Final_Watch_Dataset_Men_output` and `Final_Watch_Dataset_Women_output` if question mentions ratings, discount, or specific product specs for men or women.
 
 Instructions:
 - Return ONLY the SQL query.
-- DO NOT explain.
-- If unclear, return exactly: INVALID_QUERY
+- DO NOT explain anything.
+- If you don’t know which table to use, return exactly: INVALID_QUERY
+"""
+
+    prompt = f"""
+You are a SQL expert agent. Your job is to pick the right table and generate SQL based on the user's question.
+
+{schema_desc}
+
+{table_guidance}
 
 User: {user_query}
 
@@ -59,6 +78,7 @@ SQL Query:
         return response.text.strip()
     except Exception as e:
         return f"Gemini failed: {e}"
+
 
 # ---- Visualization Type ----
 def infer_chart_type(query):
