@@ -44,6 +44,7 @@ def generate_sql(user_query):
     ])
 
     table_guidance = """
+The tables contain watches data from Amazon across brands.
 Refer the user’s question to the right table based on these rules:
 
 - Use `product_price_cleaned_output` for general product counts, price, names, and brand queries.
