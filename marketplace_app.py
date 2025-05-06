@@ -65,6 +65,7 @@ Instructions:
 - Return ONLY the SQL query.
 - DO NOT explain anything.
 - If you don’t know which table to use, return exactly: INVALID_QUERY
+- Always wrap table names in double quotes (e.g., "Final_Watch_Dataset_Men_output")
 """
 
     prompt = f"""
