@@ -98,7 +98,35 @@ Answer with: yes or no. Do not explain.
 # ---- Streamlit App UI ----
 
 st.set_page_config(page_title="AI Agent", layout="wide")
-st.title("Auto Agent")
+st.title("Marketplace Analyst")
+
+
+st.subheader("Ask a Question About Your Data")
+user_question = st.text_input("What do you want to know?")
+
+if user_question:
+    with st.spinner("🧠 Thinking... Generating SQL query"):
+        sql_query = generate_gemini_sql(user_question)
+
+    if sql_query.strip().lower().startswith("invalid_query"):
+        st.warning("Sorry, I couldn't map your question to any known table.")
+    else:
+        st.code(sql_query, language="sql")
+        run_it = st.button("🔍 Run this query")
+
+        if run_it:
+            try:
+                import psycopg2
+                from sqlalchemy import create_engine
+
+                engine = create_engine(st.secrets["SUPABASE_DB"])
+                result_df = pd.read_sql_query(sql_query, engine)
+
+                st.success("✅ Query ran successfully!")
+                st.dataframe(result_df)
+
+            except Exception as e:
+                st.error(f"❌ Failed to execute query: {e}")
 
 # 1. Connect to the SQLite database and load the products table
 @st.cache_data
