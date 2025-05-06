@@ -3,18 +3,24 @@ import pandas as pd
 import google.generativeai as genai
 from sqlalchemy import create_engine
 import plotly.express as px
+from urllib.parse import quote_plus
 
 # ---- Gemini Setup ----
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 model = genai.GenerativeModel("gemini-2.0-flash-lite")
 
 # ---- Supabase Connection ----
+
+
+# ---- Supabase Connection ----
 DB = st.secrets["SUPABASE_DB"]
 USER = st.secrets["SUPABASE_USER"]
-PASSWORD = "14MUMb@!99!"
+PASSWORD = quote_plus("14WUMb@!99!") 
 HOST = st.secrets["SUPABASE_HOST"]
 PORT = st.secrets["SUPABASE_PORT"]
+
 engine = create_engine(f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}")
+
 
 # ---- Table Metadata ----
 TABLE_SCHEMAS = {
