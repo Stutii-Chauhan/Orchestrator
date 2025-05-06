@@ -196,13 +196,13 @@ brand_price_matrix_men = df_men.pivot_table(
     fill_value=0
 ).reset_index()
 
-# Add Total column
+# Add total column
 brand_price_matrix_men["total"] = brand_price_matrix_men.drop(columns=["brand"]).sum(axis=1)
 
 # Optional: Reorder columns
 ordered_cols = ["brand", "10k–15k", "15k–25k", "25k–40k", "40k+", "<10k", "total"]
 brand_price_matrix_men = brand_price_matrix_men.reindex(columns=[col for col in ordered_cols if col in brand_price_matrix_men.columns])
-brand_price_matrix_men = brand_price_matrix_men.sort_values(by="Total", ascending=False).reset_index(drop=True)
+brand_price_matrix_men = brand_price_matrix_men.sort_values(by="total", ascending=False).reset_index(drop=True)
 
 # View result
 #print(brand_price_matrix_men.head())
@@ -216,14 +216,14 @@ brand_price_matrix_women = df_women.pivot_table(
     fill_value=0
 ).reset_index()
 
-# Add Total column
+# Add total column
 brand_price_matrix_women["total"] = brand_price_matrix_women.drop(columns=["brand"]).sum(axis=1)
 
 # Optional: Reorder columns
 ordered_cols = ["brand", "10k–15k", "15k–25k", "25k–40k", "40k+", "<10k", "total"]
 brand_price_matrix_women = brand_price_matrix_women.reindex(columns=[col for col in ordered_cols if col in brand_price_matrix_women.columns])
 
-brand_price_matrix_women = brand_price_matrix_women.sort_values(by="Total", ascending=False).reset_index(drop=True)
+brand_price_matrix_women = brand_price_matrix_women.sort_values(by="total", ascending=False).reset_index(drop=True)
 
 brand_price_matrix_men.to_sql("men_price_range_top100", con=engine, if_exists="replace", index=False)
 brand_price_matrix_women.to_sql("women_price_range_top100", con=engine, if_exists="replace", index=False)
