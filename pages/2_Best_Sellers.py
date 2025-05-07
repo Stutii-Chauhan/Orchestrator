@@ -21,7 +21,7 @@ def render_best_sellers(gender):
     table = "top100_men_filled" if gender == "Men" else "top100_women_filled"
     df = load_data(table)
 
-    st.subheader(f"🔥 Best Sellers for {gender}")
+    # st.subheader(f"🔥 Best Sellers for {gender}")
     st.sidebar.header("Filter Products")
 
     selected_brands = st.sidebar.multiselect(
