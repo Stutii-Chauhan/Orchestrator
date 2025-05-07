@@ -81,7 +81,9 @@ def render_best_sellers(gender):
                     st.write("**Discount:** N/A")
 
         st.markdown("---")
-
+        # Add a divider between watches
+        if i < len(filtered_df) - 1:
+            st.markdown("---")
 # ---- Main UI ----
 st.set_page_config(page_title="Best Sellers", page_icon="📦")
 st.title("📦 Explore Best Sellers")
