@@ -64,9 +64,14 @@ def render_best_sellers(gender):
                 st.write(f"**Model Number:** {row['Model Number']}")
                 st.write(f"**Price:** ₹{int(row['Price'])}")
                 st.write(f"**Rating:** {row['Ratings'] if pd.notna(row['Ratings']) else 'N/A'}/5")
-                discount = row['Discount']
-                st.write(f"**Discount:** {row['Discount']}" + "%" if pd.notna(row["Discount"]) and "%" not in str(row["Discount"]) else "**Discount:** N/A")
-                # st.write(f"**Discount:** {discount + '%' if pd.notna(discount) and discount != 'N/A' else 'N/A'}")
+                discount = row["Discount"]
+                if pd.notna(discount) and str(discount).strip().upper() != "N/A" and "%" not in str(discount):
+                    st.write(f"**Discount:** {discount}%")
+                elif pd.notna(discount) and "%" in str(discount):
+                    st.write(f"**Discount:** {discount}")
+                else:
+                    st.write("**Discount:** N/A")
+
         st.markdown("---")
 
 # ---- Main UI ----
