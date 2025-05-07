@@ -15,17 +15,7 @@ engine = create_engine(f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}")
 @st.cache_data(ttl=600)
 def load_data(table_name):
     df = pd.read_sql_table(table_name, con=engine)
-    
-    # Clean price column: remove commas, convert to int, drop NAs
-    df["Price"] = (
-        df["Price"]
-        .astype(str)
-        .str.replace(",", "")
-        .str.extract("(\d+)")
-        .astype(float)
-        .dropna()
-    )
-
+    df["Price"] = pd.to_numeric(df["Price"].str.replace(",", "").fillna("0"), errors="coerce").astype(int)
     return df
 
 # ---- Display Best Sellers ----
@@ -44,10 +34,6 @@ def render_best_sellers(gender):
         "Band Material", options=sorted(df["Band Material"].dropna().unique())
     )
 
-    if df["Price"].isnull().all():
-        st.warning("Price data not found or malformed.")
-        return
-
     price_min, price_max = int(df["Price"].min()), int(df["Price"].max())
     selected_price = st.sidebar.slider("Price Range", price_min, price_max, (price_min, price_max))
 
@@ -57,8 +43,11 @@ def render_best_sellers(gender):
         filtered_df = filtered_df[filtered_df["Brand"].isin(selected_brands)]
     if selected_materials:
         filtered_df = filtered_df[filtered_df["Band Material"].isin(selected_materials)]
-    filtered_df = filtered_df[(filtered_df["Price"] >= selected_price[0]) & (filtered_df["Price"] <= selected_price[1])]
+    filtered_df = filtered_df[
+        (filtered_df["Price"] >= selected_price[0]) & (filtered_df["Price"] <= selected_price[1])
+    ]
 
+    # Display
     if filtered_df.empty:
         st.warning("No products found with selected filters.")
     else:
@@ -70,38 +59,31 @@ def render_best_sellers(gender):
                 else:
                     st.write("🖼️ Image not available")
             with col2:
-                # Make product name clickable
-                if pd.notna(row.get("URL")):
-                    product_link = f"[{row['Product Name']}]({row['URL']})"
-                else:
-                    product_link = row['Product Name']
-
-                st.subheader(product_link)
-
+                st.markdown(f"### [{row['Product Name']}]({row['URL']})")
                 st.write(f"**Brand:** {row['Brand']}")
                 st.write(f"**Model Number:** {row['Model Number']}")
                 st.write(f"**Price:** ₹{int(row['Price'])}")
-
-                # Ratings
-                rating = row.get("Ratings")
-                st.write(f"**Rating:** {rating}/5" if pd.notna(rating) else "**Rating:** N/A")
-
-                # Discount
-                discount = row.get("Discount")
-                if pd.notna(discount):
-                    discount_clean = str(discount).strip().rstrip('%')
-                    st.write(f"**Discount:** {discount_clean}%")
-                else:
-                    st.write("**Discount:** N/A")
-
-            st.markdown("---")
+                st.write(f"**Rating:** {row['Ratings'] if pd.notna(row['Ratings']) else 'N/A'}/5")
+                discount = row['Discount']
+                st.write(f"**Discount:** {discount + '%' if pd.notna(discount) and discount != 'N/A' else 'N/A'}")
+        st.markdown("---")
 
 # ---- Main UI ----
 st.set_page_config(page_title="Best Sellers", page_icon="📦")
 st.title("📦 Explore Best Sellers")
 
-col1, col2 = st.columns(2)
-if col1.button("🕺 Best Sellers for Men"):
-    render_best_sellers("Men")
-if col2.button("💃 Best Sellers for Women"):
-    render_best_sellers("Women")
+# Session variable to store gender selection
+if "selected_gender" not in st.session_state:
+    st.session_state.selected_gender = None
+
+col1, col2 = st.columns([1, 1])
+with col1:
+    if st.button("🕺 Best Sellers for Men"):
+        st.session_state.selected_gender = "Men"
+with col2:
+    if st.button("💃 Best Sellers for Women"):
+        st.session_state.selected_gender = "Women"
+
+# Render selected gender
+if st.session_state.selected_gender:
+    render_best_sellers(st.session_state.selected_gender)
