@@ -1,13 +1,25 @@
 import streamlit as st
 
-st.set_page_config("Marketplace Analyzer", layout="wide")
+# --- Page Config ---
+st.set_page_config(page_title="Watch Marketplace Analyzer", layout="wide")
 
-st.markdown("<h1 style='text-align: center;'>🕒 Welcome to the Watch Marketplace Analyzer</h1>", unsafe_allow_html=True)
-st.markdown("### Use the options in the sidebar to explore:", unsafe_allow_html=True)
+# --- Main Heading ---
+st.markdown("<h1 style='text-align: center;'>🕒 Watch Marketplace Analyzer</h1>", unsafe_allow_html=True)
+st.markdown("---")
 
-col1, col2 = st.columns(2)
-with col1:
-    st.page_link("pages/1_Ask_Questions.py", label="📊 Ask Questions", icon="📊")
+# --- Description Section ---
+st.markdown("""
+Welcome to the **Watch Marketplace Analyzer** — your one-stop dashboard to explore:
+- **Top-selling analog watches** by brand, price, and specs
+- **Competitor benchmarking** using product listings, discounts, and reviews
+- **Gender-based product distribution** and **best-performing SKUs**
+- AI-powered insights to **ask questions** about watch data
 
-with col2:
-    st.page_link("pages/2_Best_Sellers.py", label="🏆 View Best Sellers", icon="🏆")
+Use the sidebar to navigate between:
+- 📊 **Ask Questions**: Interact with your data using Gemini LLM
+- 🏆 **Best Sellers**: Explore top watches with filters and images
+""")
+
+st.markdown("---")
+st.info("Use the options in the **sidebar** to get started.")
+
