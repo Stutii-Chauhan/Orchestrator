@@ -4,7 +4,7 @@ import streamlit as st
 st.set_page_config(page_title="Watch Marketplace Analyzer", layout="wide")
 
 # --- Main Heading ---
-st.markdown("<h1 style='text-align: center;'>🕒 Watch Marketplace Analyzer</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center;'> Watch Marketplace Analyzer</h1>", unsafe_allow_html=True)
 st.markdown("---")
 
 # --- Description Section ---
