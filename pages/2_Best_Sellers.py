@@ -16,37 +16,32 @@ engine = create_engine(f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}")
 def load_data(table_name):
     return pd.read_sql_table(table_name, con=engine)
 
-# ---- App Logic ----
+# ---- Display Best Sellers ----
 def render_best_sellers(gender):
-    table_name = "Final_Watch_Dataset_Men_output" if gender == "Men" else "Final_Watch_Dataset_Women_output"
-    df = load_data(table_name)
+    table = "top100_men_filled" if gender == "Men" else "top100_women_filled"
+    df = load_data(table)
 
-    st.title(f"🔥 Best Sellers for {gender}")
-
-    # Sidebar filters
+    st.subheader(f"🔥 Best Sellers for {gender}")
     st.sidebar.header("Filter Products")
 
     selected_brands = st.sidebar.multiselect(
-        "Brand", options=sorted(df["Brand"].dropna().unique())
+        "Brand", options=sorted(df["brand"].dropna().unique())
     )
 
-    price_min, price_max = int(df["Price"].astype(float).min()), int(df["Price"].astype(float).max())
+    price_min, price_max = int(df["price"].min()), int(df["price"].max())
     selected_price = st.sidebar.slider("Price Range", price_min, price_max, (price_min, price_max))
 
     selected_materials = st.sidebar.multiselect(
-        "Band Material", options=sorted(df["Band Material"].dropna().unique())
+        "Band Material", options=sorted(df["band_material"].dropna().unique())
     )
 
     # Filtering
     filtered_df = df.copy()
     if selected_brands:
-        filtered_df = filtered_df[filtered_df["Brand"].isin(selected_brands)]
+        filtered_df = filtered_df[filtered_df["brand"].isin(selected_brands)]
     if selected_materials:
-        filtered_df = filtered_df[filtered_df["Band Material"].isin(selected_materials)]
-    filtered_df = filtered_df[
-        (filtered_df["Price"].astype(float) >= selected_price[0]) &
-        (filtered_df["Price"].astype(float) <= selected_price[1])
-    ]
+        filtered_df = filtered_df[filtered_df["band_material"].isin(selected_materials)]
+    filtered_df = filtered_df[(filtered_df["price"] >= selected_price[0]) & (filtered_df["price"] <= selected_price[1])]
 
     # Display
     if filtered_df.empty:
@@ -55,22 +50,18 @@ def render_best_sellers(gender):
         for _, row in filtered_df.iterrows():
             col1, col2 = st.columns([1, 2])
             with col1:
-                if pd.notna(row.get("ImageURL")):
-                    st.image(row["ImageURL"], width=200)
-                else:
-                    st.write("Image not available")
-
+                st.write("🖼️ Image not available")  # No imageurl column in new schema
             with col2:
-                st.subheader(f"{row['Product Name']} - ₹{int(float(row['Price']))}")
-                st.write(f"**Brand:** {row['Brand']}")
-                st.write(f"**Model Number:** {row['Model Number']}")
-                st.write(f"**Rating:** {row['Ratings']}")
-                st.write(f"**Discount:** {row['Discount']}")
+                st.subheader(f"{row['product_name']} - ₹{int(row['price'])}")
+                st.write(f"**Brand:** {row['brand']}")
+                st.write(f"**Model Number:** {row['model_number']}")
+                st.write(f"**Rating:** {row['ratings']}/5")
+                st.write(f"**Discount:** {row['discount']}%")
         st.markdown("---")
 
 # ---- Main UI ----
 st.set_page_config(page_title="Best Sellers", page_icon="🔥")
-st.title("🛍️ Explore Best Sellers")
+st.title("🔐 Explore Best Sellers")
 
 col1, col2 = st.columns(2)
 if col1.button("🕺 Best Sellers for Men"):
