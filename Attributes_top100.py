@@ -149,6 +149,37 @@ def process_watch_table(source_table: str, filled_table: str, output_table: str)
     # Upload final result
     final_df.to_sql(output_table, con=engine, if_exists="replace", index=False)
 
+# Convert and standardize dimensions
+def normalize_dimension(value):
+    if pd.isna(value):
+        return value
+
+    val = str(value).strip().lower()
+
+    # Convert from centimeters to millimeters
+    if "centimeter" in val:
+        num = re.findall(r"[\d\.]+", val)
+        if num:
+            mm_value = float(num[0]) * 10
+            return f"{int(mm_value) if mm_value.is_integer() else mm_value} Millimeters"
+
+    # Convert various forms of 'millimetre' or 'millimeter' to 'Millimeters'
+    if "millimeter" in val or "millimetre" in val:
+        num = re.findall(r"[\d\.]+", val)
+        if num:
+            return f"{num[0]} Millimeters"
+
+    # If just number, append Millimeters
+    if val.replace('.', '', 1).isdigit():
+        return f"{val} Millimeters"
+
+    return value
+
+# Apply normalization to relevant columns
+for col in ["Band Width", "Case Diameter", "Case Thickness"]:
+    final_df[col] = final_df[col].apply(normalize_dimension)
+
+
 # -------------------------------------
 # Run for Men and Women
 # -------------------------------------
