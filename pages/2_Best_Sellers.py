@@ -47,11 +47,13 @@ def render_best_sellers(gender):
         (filtered_df["Price"] >= selected_price[0]) & (filtered_df["Price"] <= selected_price[1])
     ]
 
-    # Display
+#Display
+
+# Display
     if filtered_df.empty:
         st.warning("No products found with selected filters.")
     else:
-        for _, row in filtered_df.iterrows():
+        for i, (_, row) in enumerate(filtered_df.iterrows()):
             col1, col2 = st.columns([1, 2])
             with col1:
                 if pd.notna(row.get("ImageURL")):
@@ -59,7 +61,6 @@ def render_best_sellers(gender):
                 else:
                     st.write("🖼️ Image not available")
             with col2:
-                # st.markdown(f"### [{row['Product Name']}]({row['URL']})")
                 st.markdown(
                     f"""<h4 style='margin-bottom:0'>
                             <a href="{row['URL']}" style='text-decoration: none; color: black;' target="_blank">
@@ -72,6 +73,7 @@ def render_best_sellers(gender):
                 st.write(f"**Model Number:** {row['Model Number']}")
                 st.write(f"**Price:** ₹{int(row['Price'])}")
                 st.write(f"**Rating:** {row['Ratings'] if pd.notna(row['Ratings']) else 'N/A'}/5")
+                
                 discount = row["Discount"]
                 if pd.notna(discount) and str(discount).strip().upper() != "N/A" and "%" not in str(discount):
                     st.write(f"**Discount:** {discount}%")
@@ -79,11 +81,11 @@ def render_best_sellers(gender):
                     st.write(f"**Discount:** {discount}")
                 else:
                     st.write("**Discount:** N/A")
+    
+            # Divider between watches (except after the last one)
+            if i < len(filtered_df) - 1:
+                st.markdown("---")
 
-        st.markdown("---")
-        # Add a divider between watches
-        if i < len(filtered_df) - 1:
-            st.markdown("---")
 # ---- Main UI ----
 st.set_page_config(page_title="Best Sellers", page_icon="📦")
 st.title("📦 Explore Best Sellers")
