@@ -111,7 +111,7 @@ def apply_fallback_specs(final_df: pd.DataFrame, filled_table_name: str, engine,
     merged_df.drop(columns=[col for col in merged_df.columns if col.endswith("_filled")], inplace=True)
 
     return merged_df
-
+    
 # -------------------------------------
 # Processing Function
 # -------------------------------------
@@ -140,12 +140,15 @@ def process_watch_table(source_table: str, filled_table: str, output_table: str)
     # Fill missing specs from fallback table
     final_df = apply_fallback_specs(final_df, filled_table, engine)
 
+    # Standardize units for dimension columns
+    for col in ["Band Width", "Case Diameter", "Case Thickness"]:
+        final_df[col] = final_df[col].apply(lambda x:
+            f"{x} Millimeters" if pd.notna(x) and isinstance(x, str) and x.strip().replace('.', '', 1).isdigit() else x
+        )
+
     # Upload final result
     final_df.to_sql(output_table, con=engine, if_exists="replace", index=False)
 
-# -------------------------------------
-# Run for Men and Women
-# -------------------------------------
 # -------------------------------------
 # Run for Men and Women
 # -------------------------------------
