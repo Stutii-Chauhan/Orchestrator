@@ -28,10 +28,15 @@ def render_best_sellers(gender):
         "Brand", options=sorted(df["Brand"].dropna().unique())
     )
 
-    # Ensure numeric conversion for price filter
+
+
+    # Clean and convert Price column before using
     df["Price"] = pd.to_numeric(df["Price"], errors="coerce")
+    df = df.dropna(subset=["Price"])  # Drop rows where Price is still NaN
+    
     price_min, price_max = int(df["Price"].min()), int(df["Price"].max())
     selected_price = st.sidebar.slider("Price Range", price_min, price_max, (price_min, price_max))
+
 
     selected_materials = st.sidebar.multiselect(
         "Band Material", options=sorted(df["Band Material"].dropna().unique())
