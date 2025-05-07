@@ -14,40 +14,42 @@ engine = create_engine(f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}")
 # ---- Load Data ----
 @st.cache_data(ttl=600)
 def load_data(table_name):
-    return pd.read_sql_table(table_name, con=engine)
+    df = pd.read_sql_table(table_name, con=engine)
+    df.columns = df.columns.str.lower()  # normalize column names to lowercase
+    return df
 
 # ---- Display Best Sellers ----
 def render_best_sellers(gender):
-    table = "Final_Watch_Dataset_Men_output" if gender == "Men" else "Final_Watch_Dataset_Women_output"
+    table = "final_watch_dataset_men_output" if gender == "Men" else "final_watch_dataset_women_output"
     df = load_data(table)
-
-    # Clean numeric columns
-    df["Price"] = pd.to_numeric(df["Price"], errors="coerce")
-    df["Ratings"] = pd.to_numeric(df["Ratings"], errors="coerce")
-    df["Discount"] = pd.to_numeric(df["Discount"], errors="coerce")
-    df.dropna(subset=["Price"], inplace=True)
 
     st.subheader(f"🔥 Best Sellers for {gender}")
     st.sidebar.header("Filter Products")
 
+    # Convert numeric columns and drop NaN prices
+    df["price"] = pd.to_numeric(df["price"], errors="coerce")
+    df["ratings"] = pd.to_numeric(df["ratings"], errors="coerce")
+    df["discount"] = pd.to_numeric(df["discount"], errors="coerce")
+    df.dropna(subset=["price"], inplace=True)
+
+    # Filters
     selected_brands = st.sidebar.multiselect(
-        "Brand", options=sorted(df["Brand"].dropna().unique())
+        "Brand", options=sorted(df["brand"].dropna().unique())
     )
-
-    price_min, price_max = int(df["Price"].min()), int(df["Price"].max())
+    price_min, price_max = int(df["price"].min()), int(df["price"].max())
     selected_price = st.sidebar.slider("Price Range", price_min, price_max, (price_min, price_max))
-
     selected_materials = st.sidebar.multiselect(
-        "Band Material", options=sorted(df["Band Material"].dropna().unique())
+        "Band Material", options=sorted(df["band material"].dropna().unique())
     )
 
-    # Apply filters
     filtered_df = df.copy()
     if selected_brands:
-        filtered_df = filtered_df[filtered_df["Brand"].isin(selected_brands)]
+        filtered_df = filtered_df[filtered_df["brand"].isin(selected_brands)]
     if selected_materials:
-        filtered_df = filtered_df[filtered_df["Band Material"].isin(selected_materials)]
-    filtered_df = filtered_df[(filtered_df["Price"] >= selected_price[0]) & (filtered_df["Price"] <= selected_price[1])]
+        filtered_df = filtered_df[filtered_df["band material"].isin(selected_materials)]
+    filtered_df = filtered_df[
+        (filtered_df["price"] >= selected_price[0]) & (filtered_df["price"] <= selected_price[1])
+    ]
 
     # Display products
     if filtered_df.empty:
@@ -56,16 +58,16 @@ def render_best_sellers(gender):
         for _, row in filtered_df.iterrows():
             col1, col2 = st.columns([1, 2])
             with col1:
-                if pd.notna(row.get("ImageURL")):
-                    st.image(row["ImageURL"], width=200)
+                if pd.notna(row.get("imageurl")):
+                    st.image(row["imageurl"], width=200)
                 else:
                     st.write("🖼️ Image not available")
             with col2:
-                st.subheader(f"{row['Product Name']} - ₹{int(row['Price'])}")
-                st.write(f"**Brand:** {row['Brand']}")
-                st.write(f"**Model Number:** {row['Model Number']}")
-                rating = f"{row['Ratings']}/5" if pd.notna(row['Ratings']) else "N/A"
-                discount = f"{row['Discount']}%" if pd.notna(row['Discount']) else "N/A"
+                st.subheader(f"{row['product name']} - ₹{int(row['price'])}")
+                st.write(f"**Brand:** {row['brand']}")
+                st.write(f"**Model Number:** {row['model number']}")
+                rating = f"{row['ratings']}/5" if pd.notna(row['ratings']) else "N/A"
+                discount = f"{row['discount']}%" if pd.notna(row['discount']) else "N/A"
                 st.write(f"**Rating:** {rating}")
                 st.write(f"**Discount:** {discount}")
         st.markdown("---")
