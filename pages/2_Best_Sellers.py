@@ -50,18 +50,21 @@ def render_best_sellers(gender):
         for _, row in filtered_df.iterrows():
             col1, col2 = st.columns([1, 2])
             with col1:
-                st.write("🖼️ Image not available")  # No imageurl column in new schema
+                if pd.notna(row.get("imageurl")):
+                    st.image(row["imageurl"], width=200)
+                else:
+                    st.write("🖼️ Image not available")
             with col2:
                 st.subheader(f"{row['product_name']} - ₹{int(row['price'])}")
                 st.write(f"**Brand:** {row['brand']}")
                 st.write(f"**Model Number:** {row['model_number']}")
-                st.write(f"**Rating:** {row['ratings']}/5")
-                st.write(f"**Discount:** {row['discount']}%")
+                st.write(f"**Rating:** {row.get('rating(out_of_5)', 'N/A')}/5")
+                st.write(f"**Discount:** {row.get('discount_(%)', 'N/A')}%")
         st.markdown("---")
 
 # ---- Main UI ----
 st.set_page_config(page_title="Best Sellers", page_icon="🔥")
-st.title("🔐 Explore Best Sellers")
+st.title("🛍️ Explore Best Sellers")
 
 col1, col2 = st.columns(2)
 if col1.button("🕺 Best Sellers for Men"):
