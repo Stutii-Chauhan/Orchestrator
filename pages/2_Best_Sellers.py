@@ -18,16 +18,16 @@ def load_data(table_name):
 
 # ---- Display Best Sellers ----
 def render_best_sellers(gender):
-    table = f"Final_Watch_Dataset_{gender}_output"
+    table = "Final_Watch_Dataset_Men_output" if gender == "Men" else "Final_Watch_Dataset_Women_output"
     df = load_data(table)
 
-    st.subheader(f"🔥 Best Sellers for {gender}")
-
-    # Clean Price column
+    # Clean numeric columns
     df["Price"] = pd.to_numeric(df["Price"], errors="coerce")
+    df["Ratings"] = pd.to_numeric(df["Ratings"], errors="coerce")
+    df["Discount"] = pd.to_numeric(df["Discount"], errors="coerce")
     df.dropna(subset=["Price"], inplace=True)
 
-    # Sidebar filters
+    st.subheader(f"🔥 Best Sellers for {gender}")
     st.sidebar.header("Filter Products")
 
     selected_brands = st.sidebar.multiselect(
@@ -41,17 +41,15 @@ def render_best_sellers(gender):
         "Band Material", options=sorted(df["Band Material"].dropna().unique())
     )
 
-    # Filter logic
+    # Apply filters
     filtered_df = df.copy()
     if selected_brands:
         filtered_df = filtered_df[filtered_df["Brand"].isin(selected_brands)]
     if selected_materials:
         filtered_df = filtered_df[filtered_df["Band Material"].isin(selected_materials)]
-    filtered_df = filtered_df[
-        (filtered_df["Price"] >= selected_price[0]) & (filtered_df["Price"] <= selected_price[1])
-    ]
+    filtered_df = filtered_df[(filtered_df["Price"] >= selected_price[0]) & (filtered_df["Price"] <= selected_price[1])]
 
-    # Display Results
+    # Display products
     if filtered_df.empty:
         st.warning("No products found with selected filters.")
     else:
@@ -62,13 +60,14 @@ def render_best_sellers(gender):
                     st.image(row["ImageURL"], width=200)
                 else:
                     st.write("🖼️ Image not available")
-
             with col2:
                 st.subheader(f"{row['Product Name']} - ₹{int(row['Price'])}")
                 st.write(f"**Brand:** {row['Brand']}")
                 st.write(f"**Model Number:** {row['Model Number']}")
-                st.write(f"**Rating:** {row['Ratings']}/5" if pd.notna(row.get("Ratings")) else "Rating: N/A")
-                st.write(f"**Discount:** {row['Discount']}" if pd.notna(row.get("Discount")) else "Discount: N/A")
+                rating = f"{row['Ratings']}/5" if pd.notna(row['Ratings']) else "N/A"
+                discount = f"{row['Discount']}%" if pd.notna(row['Discount']) else "N/A"
+                st.write(f"**Rating:** {rating}")
+                st.write(f"**Discount:** {discount}")
         st.markdown("---")
 
 # ---- Main UI ----
