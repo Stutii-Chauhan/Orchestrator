@@ -58,8 +58,12 @@ def render_best_sellers(gender):
                 st.subheader(f"{row['product_name']} - ₹{int(row['price'])}")
                 st.write(f"**Brand:** {row['brand']}")
                 st.write(f"**Model Number:** {row['model_number']}")
-                st.write(f"**Rating:** {row.get('rating(out_of_5)', 'N/A')}/5")
-                st.write(f"**Discount:** {row.get('discount_(%)', 'N/A')}%")
+                rating = row.get('rating(out_of_5)')
+                discount = row.get('discount_(%)')
+                
+                st.write(f"**Rating:** {str(rating) + '/5' if pd.notna(rating) else 'N/A'}")
+                st.write(f"**Discount:** {str(discount) + '%' if pd.notna(discount) else 'N/A'}")
+
         st.markdown("---")
 
 # ---- Main UI ----
