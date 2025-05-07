@@ -14,7 +14,9 @@ engine = create_engine(f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}")
 # ---- Load Data ----
 @st.cache_data(ttl=600)
 def load_data(table_name):
-    return pd.read_sql_table(table_name, con=engine)
+    df = pd.read_sql_table(table_name, con=engine)
+    df["Price"] = pd.to_numeric(df["Price"].str.replace(",", ""), errors="coerce")
+    return df
 
 # ---- Display Best Sellers ----
 def render_best_sellers(gender):
@@ -24,34 +26,34 @@ def render_best_sellers(gender):
     st.subheader(f"🔥 Best Sellers for {gender}")
     st.sidebar.header("Filter Products")
 
-    # Clean Price column
-    df["Price"] = pd.to_numeric(df["Price"].str.replace(",", ""), errors="coerce")
-
-    # Sidebar filters
     selected_brands = st.sidebar.multiselect(
         "Brand", options=sorted(df["Brand"].dropna().unique())
     )
 
-    if df["Price"].notna().any():
-        price_min, price_max = int(df["Price"].min()), int(df["Price"].max())
-        selected_price = st.sidebar.slider("Price Range", price_min, price_max, (price_min, price_max))
-    else:
-        st.warning("⚠️ Price data not found or malformed.")
+    price_min, price_max = df["Price"].min(), df["Price"].max()
+    if pd.isna(price_min) or pd.isna(price_max):
+        st.warning("Price data not found or malformed.")
         return
+
+    selected_price = st.sidebar.slider(
+        "Price Range", int(price_min), int(price_max), (int(price_min), int(price_max))
+    )
 
     selected_materials = st.sidebar.multiselect(
         "Band Material", options=sorted(df["Band Material"].dropna().unique())
     )
 
-    # Filtering
+    # ---- Filter the Data ----
     filtered_df = df.copy()
     if selected_brands:
         filtered_df = filtered_df[filtered_df["Brand"].isin(selected_brands)]
     if selected_materials:
         filtered_df = filtered_df[filtered_df["Band Material"].isin(selected_materials)]
-    filtered_df = filtered_df[(filtered_df["Price"] >= selected_price[0]) & (filtered_df["Price"] <= selected_price[1])]
+    filtered_df = filtered_df[
+        (filtered_df["Price"] >= selected_price[0]) & (filtered_df["Price"] <= selected_price[1])
+    ]
 
-    # Display
+    # ---- Display the Products ----
     if filtered_df.empty:
         st.warning("No products found with selected filters.")
     else:
@@ -62,13 +64,26 @@ def render_best_sellers(gender):
                     st.image(row["ImageURL"], width=200)
                 else:
                     st.write("🖼️ Image not available")
-
             with col2:
                 st.subheader(f"{row['Product Name']} - ₹{int(row['Price'])}")
                 st.write(f"**Brand:** {row['Brand']}")
                 st.write(f"**Model Number:** {row['Model Number']}")
-                st.write(f"**Rating:** {row['Ratings']}/5" if pd.notna(row["Ratings"]) else "**Rating:** N/A")
-                st.write(f"**Discount:** {row['Discount']}%" if pd.notna(row["Discount"]) else "**Discount:** N/A")
+
+                # Ratings
+                rating = row["Ratings"]
+                if pd.notna(rating):
+                    st.write(f"**Rating:** {rating}/5")
+                else:
+                    st.write("**Rating:** N/A")
+
+                # Discount with cleanup
+                discount = row["Discount"]
+                if pd.notna(discount):
+                    discount_val = str(discount).strip().rstrip('%')
+                    st.write(f"**Discount:** {discount_val}%")
+                else:
+                    st.write("**Discount:** N/A")
+
         st.markdown("---")
 
 # ---- Main UI ----
