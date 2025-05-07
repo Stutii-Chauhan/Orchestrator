@@ -14,7 +14,7 @@ if not st.session_state.logged_in:
     if st.button("Login"):
         if username == "admin" and password == "titan123":
             st.session_state.logged_in = True
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.error("Invalid credentials. Please try again.")
     st.stop()
