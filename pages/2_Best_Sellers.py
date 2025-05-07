@@ -18,7 +18,7 @@ def load_data(table_name):
 
 # ---- App Logic ----
 def render_best_sellers(gender):
-    table_name = "top100_men_filled" if gender == "Men" else "top100_women_filled"
+    table_name = "Final_Watch_Dataset_Men_output" if gender == "Men" else "Final_Watch_Dataset_Women_output"
     df = load_data(table_name)
 
     st.title(f"🔥 Best Sellers for {gender}")
