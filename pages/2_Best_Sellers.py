@@ -18,57 +18,59 @@ def load_data(table_name):
 
 # ---- Display Best Sellers ----
 def render_best_sellers(gender):
-    table = "top100_men_filled" if gender == "Men" else "top100_women_filled"
+    table = "Final_Watch_Dataset_Men_output" if gender == "Men" else "Final_Watch_Dataset_Women_output"
     df = load_data(table)
 
-    # st.subheader(f"🔥 Best Sellers for {gender}")
+    st.subheader(f"🔥 Best Sellers for {gender}")
     st.sidebar.header("Filter Products")
 
     selected_brands = st.sidebar.multiselect(
-        "Brand", options=sorted(df["brand"].dropna().unique())
+        "Brand", options=sorted(df["Brand"].dropna().unique())
     )
 
-    price_min, price_max = int(df["price"].min()), int(df["price"].max())
+    # Ensure numeric conversion for price filter
+    df["Price"] = pd.to_numeric(df["Price"], errors="coerce")
+    price_min, price_max = int(df["Price"].min()), int(df["Price"].max())
     selected_price = st.sidebar.slider("Price Range", price_min, price_max, (price_min, price_max))
 
     selected_materials = st.sidebar.multiselect(
-        "Band Material", options=sorted(df["band_material"].dropna().unique())
+        "Band Material", options=sorted(df["Band Material"].dropna().unique())
     )
 
-    # Filtering
+    # Apply filters
     filtered_df = df.copy()
     if selected_brands:
-        filtered_df = filtered_df[filtered_df["brand"].isin(selected_brands)]
+        filtered_df = filtered_df[filtered_df["Brand"].isin(selected_brands)]
     if selected_materials:
-        filtered_df = filtered_df[filtered_df["band_material"].isin(selected_materials)]
-    filtered_df = filtered_df[(filtered_df["price"] >= selected_price[0]) & (filtered_df["price"] <= selected_price[1])]
+        filtered_df = filtered_df[filtered_df["Band Material"].isin(selected_materials)]
+    filtered_df = filtered_df[(filtered_df["Price"] >= selected_price[0]) & (filtered_df["Price"] <= selected_price[1])]
 
-    # Display
+    # Display product cards
     if filtered_df.empty:
         st.warning("No products found with selected filters.")
     else:
         for _, row in filtered_df.iterrows():
             col1, col2 = st.columns([1, 2])
             with col1:
-                if pd.notna(row.get("imageurl")):
-                    st.image(row["imageurl"], width=200)
+                if pd.notna(row.get("ImageURL")):
+                    st.image(row["ImageURL"], width=200)
                 else:
                     st.write("🖼️ Image not available")
             with col2:
-                st.subheader(f"{row['product_name']} - ₹{int(row['price'])}")
-                st.write(f"**Brand:** {row['brand']}")
-                st.write(f"**Model Number:** {row['model_number']}")
-                rating = row.get('rating(out_of_5)')
-                discount = row.get('discount_(%)')
+                st.subheader(f"{row['Product Name']} - ₹{int(float(row['Price']))}")
+                st.write(f"**Brand:** {row['Brand']}")
+                st.write(f"**Model Number:** {row['Model Number']}")
                 
+                rating = row.get("Ratings")
+                discount = row.get("Discount")
+
                 st.write(f"**Rating:** {str(rating) + '/5' if pd.notna(rating) else 'N/A'}")
                 st.write(f"**Discount:** {str(discount) + '%' if pd.notna(discount) else 'N/A'}")
-
         st.markdown("---")
 
 # ---- Main UI ----
 st.set_page_config(page_title="Best Sellers", page_icon="🔥")
-st.title("🛍️ Explore Best Sellers")
+st.title("📦 Explore Best Sellers")
 
 col1, col2 = st.columns(2)
 if col1.button("🕺 Best Sellers for Men"):
