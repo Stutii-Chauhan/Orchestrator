@@ -146,5 +146,5 @@ def process_watch_table(source_table: str, filled_table: str, output_table: str)
 # -------------------------------------
 # Run for Men and Women
 # -------------------------------------
-process_watch_table("top_100_men", "top_100_men_filled", "Final_Watch_Dataset_Men_output")
-process_watch_table("top_100_women", "top_100_women_filled", "Final_Watch_Dataset_Women_output")
+process_watch_table("top_100_men", "top100_men_filled", "Final_Watch_Dataset_Men_output")
+process_watch_table("top_100_women", "top100_women_filled", "Final_Watch_Dataset_Women_output")
