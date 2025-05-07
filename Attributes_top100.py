@@ -104,8 +104,10 @@ def apply_fallback_specs(final_df: pd.DataFrame, filled_table_name: str, engine,
     for col in attributes_to_fill:
         filled_col = f"{col}_filled"
         if filled_col in merged_df.columns:
-            merged_df[col] = merged_df[col].fillna(merged_df[filled_col])
-            merged_df[col] = merged_df[col].replace("", merged_df[filled_col])
+            merged_df[col] = merged_df[col].where(
+                merged_df[col].notna() & (merged_df[col] != ""),
+                merged_df[filled_col]
+            )
 
     merged_df.drop(columns=[f"{col}_filled" for col in attributes_to_fill if f"{col}_filled" in merged_df.columns], inplace=True)
 
