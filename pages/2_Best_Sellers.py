@@ -23,7 +23,7 @@ def render_best_sellers(gender):
     table = "Final_Watch_Dataset_Men_output" if gender == "Men" else "Final_Watch_Dataset_Women_output"
     df = load_data(table)
 
-    st.subheader(f"🔥 Best Sellers for {gender}")
+    # st.subheader(f"🔥 Best Sellers for {gender}")
     st.sidebar.header("Filter Products")
 
     selected_brands = st.sidebar.multiselect(
@@ -59,7 +59,15 @@ def render_best_sellers(gender):
                 else:
                     st.write("🖼️ Image not available")
             with col2:
-                st.markdown(f"### [{row['Product Name']}]({row['URL']})")
+                # st.markdown(f"### [{row['Product Name']}]({row['URL']})")
+                st.markdown(
+                    f"""<h4 style='margin-bottom:0'>
+                            <a href="{row['URL']}" style='text-decoration: none; color: black;' target="_blank">
+                                {row['Product Name']}
+                            </a>
+                        </h4>""",
+                    unsafe_allow_html=True,
+                )
                 st.write(f"**Brand:** {row['Brand']}")
                 st.write(f"**Model Number:** {row['Model Number']}")
                 st.write(f"**Price:** ₹{int(row['Price'])}")
