@@ -147,26 +147,31 @@ def process_watch_table(source_table: str, filled_table: str, output_table: str)
     def normalize_dimension(value):
         if pd.isna(value):
             return value
-
+    
         val = str(value).strip().lower()
-
+    
         # Convert from centimeters to millimeters
         if "centimeter" in val:
             num = re.findall(r"[\d\.]+", val)
             if num:
                 mm_value = float(num[0]) * 10
-                return f"{int(mm_value) if mm_value.is_integer() else mm_value} Millimeters"
-
-        # Convert millimeter/millimetre to 'Millimeters'
+                clean_val = int(mm_value) if mm_value.is_integer() else mm_value
+                return f"{clean_val} Millimeters"
+    
+        # Convert various forms of 'millimetre' or 'millimeter' to 'Millimeters'
         if "millimeter" in val or "millimetre" in val:
             num = re.findall(r"[\d\.]+", val)
             if num:
-                return f"{num[0]} Millimeters"
-
-        # If just numeric value
+                val_float = float(num[0])
+                clean_val = int(val_float) if val_float.is_integer() else val_float
+                return f"{clean_val} Millimeters"
+    
+        # If just number, append Millimeters
         if val.replace('.', '', 1).isdigit():
-            return f"{val} Millimeters"
-
+            val_float = float(val)
+            clean_val = int(val_float) if val_float.is_integer() else val_float
+            return f"{clean_val} Millimeters"
+    
         return value
 
     # Apply to dimension columns
