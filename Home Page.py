@@ -1,12 +1,17 @@
 import streamlit as st
+import streamlit_authenticator as stauth
 from streamlit_extras.switch_page_button import switch_page
 
-# ---- Simple Login ----
+# --- Page Setup ---
+st.set_page_config(page_title="Login | Watch Marketplace Analyzer", page_icon="🔐", layout="centered")
+
+# --- Session State Initialization ---
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
+# --- Login Logic ---
 if not st.session_state.logged_in:
-    st.title("🔒 Login to Marketplace Analyzer")
+    st.title("🔐 Login to Marketplace Analyzer")
 
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
@@ -14,27 +19,13 @@ if not st.session_state.logged_in:
     if st.button("Login"):
         if username == "admin" and password == "titan123":
             st.session_state.logged_in = True
+            st.success("Login successful!")
             st.rerun()
         else:
-            st.error("Invalid credentials. Please try again.")
-    st.stop()
+            st.error("Invalid username or password.")
 
-# ---- Main Home Page ----
-st.set_page_config("Watch Marketplace Analyzer", layout="centered")
+    st.info("Please login to access other features of the dashboard.")
 
-st.markdown("## ⌚ Welcome to the Watch Marketplace Analyzer")
-st.markdown(
-    "This platform helps you analyze the watch market by answering data-driven questions "
-    "and exploring the top-selling analog watches across brands and price bands."
-)
-st.markdown("Use the options below to explore:")
-
-col1, col2 = st.columns(2)
-
-with col1:
-    if st.button("📊 Ask Questions"):
-        switch_page("Ask Questions")
-
-with col2:
-    if st.button("🏆 View Best Sellers"):
-        switch_page("Best Sellers")
+# --- Redirect After Login ---
+if st.session_state.logged_in:
+    switch_page("Home Page")
