@@ -67,15 +67,17 @@ def parse_specs(spec_str):
 def apply_fallback_specs(final_df: pd.DataFrame, filled_table_name: str, engine, key_col="URL") -> pd.DataFrame:
     filled_df = pd.read_sql_table(filled_table_name, con=engine)
 
-    # Map lowercase underscore columns to Title Case
+    # Rename columns from snake_case or strange names to match final_df
     rename_map = {
         "url": "URL",
         "brand": "Brand",
         "model_number": "Model Number",
         "product_name": "Product Name",
         "ratings": "Ratings",
+        "rating(out_of_5)": "Ratings",       # 👈 fix for actual Supabase column
         "price": "Price",
         "discount": "Discount",
+        "discount_(%)": "Discount",         # 👈 fix for actual Supabase column
         "band_colour": "Band Colour",
         "band_material": "Band Material",
         "band_width": "Band Width",
@@ -91,17 +93,13 @@ def apply_fallback_specs(final_df: pd.DataFrame, filled_table_name: str, engine,
         "imageurl": "ImageURL"
     }
 
-    # Rename columns in the filled table
     filled_df.rename(columns=rename_map, inplace=True)
 
-    # Merge based on URL
+    # Merge original and filled datasets
     merged_df = final_df.merge(filled_df, on=key_col, how="left", suffixes=("", "_filled"))
 
-    # Columns to fill (exclude raw ones)
-    raw_cols = ["URL", "Brand", "Product Name", "Model Number", "Price", "Ratings", "Discount", "ImageURL"]
-    attributes_to_fill = [col for col in final_df.columns if col not in raw_cols]
-
-    for col in attributes_to_fill:
+    # For all columns in final_df, try to fill from *_filled
+    for col in final_df.columns:
         filled_col = f"{col}_filled"
         if filled_col in merged_df.columns:
             merged_df[col] = merged_df[col].where(
@@ -109,10 +107,10 @@ def apply_fallback_specs(final_df: pd.DataFrame, filled_table_name: str, engine,
                 merged_df[filled_col]
             )
 
-    merged_df.drop(columns=[f"{col}_filled" for col in attributes_to_fill if f"{col}_filled" in merged_df.columns], inplace=True)
+    # Drop any *_filled columns
+    merged_df.drop(columns=[col for col in merged_df.columns if col.endswith("_filled")], inplace=True)
 
     return merged_df
-
 
 # -------------------------------------
 # Processing Function
