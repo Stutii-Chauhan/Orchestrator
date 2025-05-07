@@ -3,9 +3,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 from urllib.parse import quote_plus
 
-# ---------------------------
-# Supabase DB Connection
-# ---------------------------
+# ---- Supabase DB Connection ----
 DB = st.secrets["SUPABASE_DB"]
 USER = st.secrets["SUPABASE_USER"]
 PASSWORD = quote_plus(st.secrets["SUPABASE_PASSWORD"])
@@ -13,16 +11,12 @@ HOST = st.secrets["SUPABASE_HOST"]
 PORT = st.secrets["SUPABASE_PORT"]
 engine = create_engine(f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}")
 
-# ---------------------------
-# Load Data
-# ---------------------------
+# ---- Load Data ----
 @st.cache_data(ttl=600)
 def load_data(table_name):
     return pd.read_sql_table(table_name, con=engine)
 
-# ---------------------------
-# Display Best Sellers
-# ---------------------------
+# ---- Display Best Sellers ----
 def render_best_sellers(gender):
     table = "Final_Watch_Dataset_Men_output" if gender == "Men" else "Final_Watch_Dataset_Women_output"
     df = load_data(table)
@@ -30,20 +24,20 @@ def render_best_sellers(gender):
     st.subheader(f"🔥 Best Sellers for {gender}")
     st.sidebar.header("Filter Products")
 
-    # Safely convert Price to numeric
-    df["Price"] = pd.to_numeric(df["Price"], errors="coerce")
-    df = df[df["Price"].notna()]
+    # Clean Price column
+    df["Price"] = pd.to_numeric(df["Price"].str.replace(",", ""), errors="coerce")
 
-    if df.empty:
-        st.warning("Price data not found or malformed.")
-        return
-
+    # Sidebar filters
     selected_brands = st.sidebar.multiselect(
         "Brand", options=sorted(df["Brand"].dropna().unique())
     )
 
-    price_min, price_max = int(df["Price"].min()), int(df["Price"].max())
-    selected_price = st.sidebar.slider("Price Range", price_min, price_max, (price_min, price_max))
+    if df["Price"].notna().any():
+        price_min, price_max = int(df["Price"].min()), int(df["Price"].max())
+        selected_price = st.sidebar.slider("Price Range", price_min, price_max, (price_min, price_max))
+    else:
+        st.warning("⚠️ Price data not found or malformed.")
+        return
 
     selected_materials = st.sidebar.multiselect(
         "Band Material", options=sorted(df["Band Material"].dropna().unique())
@@ -68,17 +62,16 @@ def render_best_sellers(gender):
                     st.image(row["ImageURL"], width=200)
                 else:
                     st.write("🖼️ Image not available")
+
             with col2:
                 st.subheader(f"{row['Product Name']} - ₹{int(row['Price'])}")
                 st.write(f"**Brand:** {row['Brand']}")
                 st.write(f"**Model Number:** {row['Model Number']}")
-                st.write(f"**Rating:** {row['Ratings']}/5" if pd.notna(row.get("Ratings")) else "**Rating:** N/A")
-                st.write(f"**Discount:** {row['Discount']}" if pd.notna(row.get("Discount")) else "**Discount:** N/A")
+                st.write(f"**Rating:** {row['Ratings']}/5" if pd.notna(row["Ratings"]) else "**Rating:** N/A")
+                st.write(f"**Discount:** {row['Discount']}%" if pd.notna(row["Discount"]) else "**Discount:** N/A")
         st.markdown("---")
 
-# ---------------------------
-# Main UI
-# ---------------------------
+# ---- Main UI ----
 st.set_page_config(page_title="Best Sellers", page_icon="📦")
 st.title("📦 Explore Best Sellers")
 
