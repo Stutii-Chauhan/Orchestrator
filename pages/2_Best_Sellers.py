@@ -55,7 +55,7 @@ def render_best_sellers(gender):
             col1, col2 = st.columns([1, 2])
             with col1:
                 if pd.notna(row.get("ImageURL")):
-                    st.image(row["ImageURL"], width=200)
+                    st.image(row["ImageURL"], width=180)
                 else:
                     st.write("🖼️ Image not available")
             with col2:
