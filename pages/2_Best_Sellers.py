@@ -41,13 +41,13 @@ def render_best_sellers(gender):
     filtered_df = df.copy()
     if selected_brands:
         filtered_df = filtered_df[filtered_df["Brand"].isin(selected_brands)]
+    if selected_dialcol:
+        filtered_df = filtered_df[filtered_df["Dial Colour"].isin(selected_dialcol)]
     if selected_priceband:
         filtered_df = filtered_df[filtered_df["price_band"].isin(selected_priceband)]
     filtered_df = filtered_df[
         (filtered_df["Price"] >= selected_price[0]) & (filtered_df["Price"] <= selected_price[1])
     ]
-    if selected_dialcol:
-        filtered_df = filtered_df[filtered_df["Dial Colour"].isin(selected_dialcol)]
 
     # Pagination settings
     items_per_page = 6
