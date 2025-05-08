@@ -86,69 +86,54 @@ def render_best_sellers(gender):
         st.warning("No products found with selected filters.")
     else:
         st.markdown(f"**Showing {start_idx + 1}–{min(end_idx, total_items)} of {total_items} products**")
-        
-        # ✅ Updated product rendering with responsive layout
-        rows = list(paged_df.iterrows())
-        st.markdown("""
-        <style>
-        .card-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 24px;
-        }
-        .product-card {
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            padding: 16px;
-            width: 280px;
-            max-width: 90vw;
-            text-align: center;
-        }
-        .product-card img {
-            width: 100%;
-            max-height: 180px;
-            object-fit: contain;
-            margin-bottom: 12px;
-        }
-        @media screen and (max-width: 768px) {
-            .card-grid {
-                gap: 16px;
-            }
-            .product-card {
-                width: 90vw;
-            }
-        }
-        </style>
-        <div class="card-grid">
-        """, unsafe_allow_html=True)
-        
-        for _, row in rows:
-            st.markdown(f"""
-            <div class="product-card">
-                <a href="{row['URL']}" target="_blank">
-                    <img src="{row['ImageURL']}" alt="Watch Image">
-                </a>
-                <h4 style="font-size:1rem; line-height:1.3; margin-bottom:8px; height:2.6em; overflow:hidden;">{row['Product Name'][:60]}...</h4>
-                <p><b>Brand:</b> {row['Brand']}</p>
-                <p><b>Model Number:</b> {row['Model Number']}</p>
-                <p><b>Price:</b> ₹{int(row['Price'])}</p>
-                <p><b>Rating:</b> {
-                    f"{int(row['Ratings'])}/5" if pd.notna(row['Ratings']) and row['Ratings'].is_integer()
-                    else f"{round(row['Ratings'], 1)}/5" if pd.notna(row['Ratings'])
-                    else "N/A"
-                }</p>
-                <p><b>Discount:</b> {
-                    "No" if pd.notna(row["Discount"]) and row["Discount"] in ["0", "0.0"]
-                    else row["Discount"] + "%" if pd.notna(row["Discount"])
-                    else "N/A"
-                }</p>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        st.markdown("</div>", unsafe_allow_html=True)
 
+        rows = list(paged_df.iterrows())
+        for i in range(0, len(rows), 3):
+            cols = st.columns(3)
+            for j in range(3):
+                if i + j < len(rows):
+                    _, row = rows[i + j]
+                    with cols[j]:
+                        st.markdown(
+                            f"""
+                            <div style="border:1px solid #ddd; padding:15px; border-radius:8px; 
+                                        box-shadow:2px 2px 10px #eee; height:540px; 
+                                        display: flex; flex-direction: column; justify-content: space-between;">
+                                <div style='text-align:center'>
+                                    <a href="{row['URL']}" target="_blank">
+                                        <img src="{row['ImageURL']}" style="height:240px; object-fit:contain; margin:auto; display:block; margin-bottom:15px;" />
+                                    </a>
+                                </div>
+                                <div style="font-weight:bold; font-size:1.05rem; margin-top:7.5px;
+                                            display: -webkit-box;
+                                            -webkit-line-clamp: 2;
+                                            -webkit-box-orient: vertical;
+                                            overflow: hidden;
+                                            height: 3em;
+                                            line-height: 1.5em;"
+                                     title="{row['Product Name']}">
+                                    {row['Product Name']}
+                                </div>
+                                <div style="font-size:0.95rem; line-height:1.6">
+                                    <b>Brand:</b> {row['Brand']}<br>
+                                    <b>Model Number:</b> {row['Model Number']}<br>
+                                    <b>Price:</b> ₹{int(row['Price'])}<br>
+                                    <b>Rating:</b> {
+                                        f"{int(row['Ratings'])}/5" if pd.notna(row['Ratings']) and row['Ratings'].is_integer()
+                                        else f"{round(row['Ratings'], 1)}/5" if pd.notna(row['Ratings'])
+                                        else "N/A"
+                                    }<br>
+                                    <b>Discount:</b> {
+                                        "No" if pd.notna(row["Discount"]) and row["Discount"] in ["0", "0.0"]
+                                        else row["Discount"] + "%" if pd.notna(row["Discount"])
+                                        else "N/A"
+                                    }
+                                </div>
+                            </div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+            st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
         # Pagination Controls
         st.markdown("<br>", unsafe_allow_html=True)
