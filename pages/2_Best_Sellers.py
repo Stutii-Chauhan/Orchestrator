@@ -38,7 +38,9 @@ def render_best_sellers(gender):
         filtered_df = filtered_df[filtered_df["Brand"].isin(selected_brands)]
     if selected_materials:
         filtered_df = filtered_df[filtered_df["price_band"].isin(selected_materials)]
-    filtered_df = filtered_df[(filtered_df["Price"] >= selected_price[0]) & (filtered_df["Price"] <= selected_price[1])]
+    filtered_df = filtered_df[
+        (filtered_df["Price"] >= selected_price[0]) & (filtered_df["Price"] <= selected_price[1])
+    ]
 
     # Display
     if filtered_df.empty:
@@ -74,6 +76,8 @@ def render_best_sellers(gender):
                             """,
                             unsafe_allow_html=True
                         )
+            # Row divider after every set of 2
+            st.markdown("<hr style='margin-top: 20px; margin-bottom: 20px;'>", unsafe_allow_html=True)
 
 # ---- Main UI ----
 st.set_page_config(page_title="Best Sellers", page_icon="📦")
