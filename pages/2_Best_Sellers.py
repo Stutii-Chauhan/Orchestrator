@@ -90,7 +90,11 @@ def render_best_sellers(gender):
                                     <b>Model Number:</b> {row['Model Number']}<br>
                                     <b>Price:</b> ₹{int(row['Price'])}<br>
                                     <b>Rating:</b> {row['Ratings'] if pd.notna(row['Ratings']) else 'N/A'}/5<br>
-                                    <b>Discount:</b> {str(row['Discount']) if pd.notna(row['Discount']) else 'N/A'}
+                                    <b>Discount:</b> {
+                                        "No" if pd.notna(row["Discount"]) and float(row["Discount"]) == 0.0 
+                                        else str(row["Discount"]) + "%" if pd.notna(row["Discount"]) 
+                                        else "N/A"
+                                    }
                                 </div>
                             </div>
                             """,
