@@ -90,59 +90,29 @@ def render_best_sellers(gender):
         # --- Pagination Controls ---
         # --- Pagination Controls ---
         st.markdown("<br>", unsafe_allow_html=True)
-        col1, col2, col3 = st.columns([1, 4, 1])
+        col1, col2, col3 = st.columns([1, 6, 1])
         
-        # Previous
+        # Prev button
         with col1:
             if st.session_state.page_number > 1:
                 if st.button("⬅️ Prev"):
                     st.session_state.page_number -= 1
         
-        # Dynamic page numbers in the center
+        # Page number buttons
         with col2:
             current = st.session_state.page_number
-            window = 2  # Show 2 pages before and after
-            page_range = []
+            window = 2
+            page_range = list(range(max(1, current - window), min(total_pages + 1, current + window + 1)))
         
-            if current > window + 1:
-                page_range.append("1")
-                if current > window + 2:
-                    page_range.append("...")
-        
-            for i in range(max(1, current - window), min(total_pages + 1, current + window + 1)):
-                page_range.append(str(i))
-        
-            if current + window < total_pages:
-                if current + window + 1 < total_pages:
-                    page_range.append("...")
-                page_range.append(str(total_pages))
-        
-            page_links_html = []
-            for p in page_range:
-                if p == str(current):
-                    page_links_html.append(f"<b>{p}</b>")
-                elif p == "...":
-                    page_links_html.append("...")
+            page_buttons = st.columns(len(page_range))
+            for idx, page in enumerate(page_range):
+                if page == current:
+                    page_buttons[idx].button(f"• {page} •", disabled=True)
                 else:
-                    page_links_html.append(
-                        f"<a href='#' onclick='window.parent.postMessage({{\"page\": {p}}}, \"*\")'>{p}</a>"
-                    )
+                    if page_buttons[idx].button(str(page)):
+                        st.session_state.page_number = page
         
-            st.markdown(
-                f"""
-                <div style='text-align:center; font-size: 16px;'>
-                    {" | ".join(page_links_html)}
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-        
-            # Add a hidden form for Streamlit-safe input switching
-            page_clicked = st.selectbox("Page Navigation", list(range(1, total_pages + 1)), index=current - 1, label_visibility="collapsed")
-            if page_clicked != current:
-                st.session_state.page_number = page_clicked
-        
-        # Next
+        # Next button
         with col3:
             if st.session_state.page_number < total_pages:
                 if st.button("Next ➡️"):
