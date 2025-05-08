@@ -30,8 +30,8 @@ def render_best_sellers(gender):
         "Brand", options=sorted(df["Brand"].dropna().unique())
     )
 
-    selected_materials = st.sidebar.multiselect(
-        "Band Material", options=sorted(df["Band Material"].dropna().unique())
+    selected_price_bands = st.sidebar.multiselect(
+        "Price Band", options=sorted(df["price_band"].dropna().unique())
     )
 
     price_min, price_max = int(df["Price"].min()), int(df["Price"].max())
@@ -41,8 +41,8 @@ def render_best_sellers(gender):
     filtered_df = df.copy()
     if selected_brands:
         filtered_df = filtered_df[filtered_df["Brand"].isin(selected_brands)]
-    if selected_materials:
-        filtered_df = filtered_df[filtered_df["Band Material"].isin(selected_materials)]
+    if selected_price_bands:
+        filtered_df = filtered_df[filtered_df["price_band"].isin(selected_price_bands)]
     filtered_df = filtered_df[
         (filtered_df["Price"] >= selected_price[0]) & (filtered_df["Price"] <= selected_price[1])
     ]
@@ -51,37 +51,33 @@ def render_best_sellers(gender):
     if filtered_df.empty:
         st.warning("No products found with selected filters.")
     else:
-        for i in range(0, len(filtered_df), 3):
-            row_chunk = filtered_df.iloc[i:i+3]
+        rows = list(filtered_df.iterrows())
+        for i in range(0, len(rows), 3):
             cols = st.columns(3)
+            for j in range(3):
+                if i + j < len(rows):
+                    _, row = rows[i + j]
+                    with cols[j]:
+                        if pd.notna(row.get("ImageURL")):
+                            st.image(row["ImageURL"], width=160)
+                        else:
+                            st.write("🖼️ Image not available")
 
-            for col, (_, row) in zip(cols, row_chunk.iterrows()):
-                with col:
-                    if pd.notna(row.get("ImageURL")):
-                        st.image(row["ImageURL"], width=140)
-                    else:
-                        st.write("🖼️ Image not available")
-
-                    st.markdown(
-                        f"""<h4 style='margin-bottom:0'>
-                                <a href=\"{row['URL']}\" style='text-decoration: none; color: black;' target=\"_blank\">
-                                    {row['Product Name']}
-                                </a>
-                            </h4>""",
-                        unsafe_allow_html=True,
-                    )
-                    st.write(f"**Brand:** {row['Brand']}")
-                    st.write(f"**Model Number:** {row['Model Number']}")
-                    st.write(f"**Price:** ₹{int(row['Price'])}")
-                    st.write(f"**Rating:** {row['Ratings'] if pd.notna(row['Ratings']) else 'N/A'}/5")
-
-                    discount = row["Discount"]
-                    if pd.notna(discount) and str(discount).strip().upper() != "N/A" and "%" not in str(discount):
-                        st.write(f"**Discount:** {discount}%")
-                    elif pd.notna(discount) and "%" in str(discount):
-                        st.write(f"**Discount:** {discount}")
-                    else:
-                        st.write("**Discount:** N/A")
+                        st.markdown(
+                            f"""
+                            <div style='line-height: 1.4; min-height: 80px; font-size: 1.1rem; font-weight: bold'>
+                                {row['Product Name']}
+                            </div>
+                            <div style='line-height: 1.6; font-size: 0.95rem'>
+                                <b>Brand:</b> {row['Brand']}<br>
+                                <b>Model Number:</b> {row['Model Number']}<br>
+                                <b>Price:</b> ₹{int(row['Price'])}<br>
+                                <b>Rating:</b> {row['Ratings'] if pd.notna(row['Ratings']) else 'N/A'}/5<br>
+                                <b>Discount:</b> {str(row['Discount']) if pd.notna(row['Discount']) else 'N/A'}
+                            </div>
+                            """,
+                            unsafe_allow_html=True
+                        )
 
 # ---- Main UI ----
 st.set_page_config(page_title="Best Sellers", page_icon="📦")
@@ -93,10 +89,10 @@ if "selected_gender" not in st.session_state:
 
 # Sidebar gender selector
 st.sidebar.markdown("### Select Gender")
-st.session_state.selected_gender = st.sidebar.radio(
+st.sidebar.radio(
     "Choose Best Seller Category",
     ["Men", "Women"],
-    index=["Men", "Women"].index(st.session_state.selected_gender)
+    key="selected_gender"
 )
 
 # Render based on gender selection
