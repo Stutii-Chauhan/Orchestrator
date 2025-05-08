@@ -26,6 +26,7 @@ def render_best_sellers(gender):
 
     # 1. Price Band (Checkboxes)
     st.sidebar.markdown("**Price Band**")
+    df["price_band"] = df["price_band"].str.strip().str.upper()
     price_band_options = sorted(df["price_band"].dropna().unique())
     selected_priceband = []
     for band in price_band_options:
@@ -37,15 +38,19 @@ def render_best_sellers(gender):
     selected_price = st.sidebar.slider("Price Range", price_min, price_max, (price_min, price_max))
 
     # 3. Brand
+    df["Brand"] = df["Brand"].str.strip().str.lower().str.title()
     selected_brands = st.sidebar.multiselect("Brand", sorted(df["Brand"].dropna().unique()))
 
     # 4. Dial Colour
+    df["Dial Colour"] = df["Dial Colour"].str.strip().str.lower().str.title()
     selected_dialcol = st.sidebar.multiselect("Dial Colour", sorted(df["Dial Colour"].dropna().unique()))
 
     # 5. Band Colour
+    df["Band Colour"] = df["Band Colour"].str.strip().str.lower().str.title()
     selected_bandcol = st.sidebar.multiselect("Band Colour", sorted(df["Band Colour"].dropna().unique()))
 
     # 6. Dial Shape
+    df["Case Shape"] = df["Case Shape"].str.strip().str.lower().str.title()
     selected_dialshape = st.sidebar.multiselect("Dial Shape", sorted(df["Case Shape"].dropna().unique()))
 
     # Apply filters
