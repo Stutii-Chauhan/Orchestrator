@@ -21,7 +21,7 @@ def render_best_sellers(gender):
     table = "Final_Watch_Dataset_Men_output" if gender == "Men" else "Final_Watch_Dataset_Women_output"
     df = load_data(table)
 
-    st.subheader(f"🔥 Best Sellers for {gender}")
+    # st.subheader(f"🔥 Best Sellers for {gender}")
     st.sidebar.header("Filter Products")
 
     selected_brands = st.sidebar.multiselect("Brand", sorted(df["Brand"].dropna().unique()))
@@ -102,7 +102,7 @@ def render_best_sellers(gender):
 
 # ---- Main UI ----
 st.set_page_config(page_title="Best Sellers", page_icon="📦")
-st.title("📦 Explore Best Sellers")
+st.title(f" Best Sellers for {gender}")
 
 if "selected_gender" not in st.session_state:
     st.session_state.selected_gender = "Men"
