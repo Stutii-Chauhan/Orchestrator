@@ -71,9 +71,14 @@ def render_best_sellers(gender):
                                 <div style='text-align:center'>
                                     <img src="{row['ImageURL']}" width="140"/>
                                 </div>
-                                <div style="font-weight:bold; font-size:1.05rem; margin-top:10px; 
-                                            min-height:60px; overflow:hidden; text-overflow:ellipsis">
-                                    {row['Product Name'][:70] + ('...' if len(row['Product Name']) > 70 else '')}
+                                <div style="font-weight:bold; font-size:1.05rem; margin-top:10px;
+                                            display: -webkit-box;
+                                            -webkit-line-clamp: 2;
+                                            -webkit-box-orient: vertical;
+                                            overflow: hidden;
+                                            height: 3em;
+                                            line-height: 1.5em;">
+                                    {row['Product Name']}
                                 </div>
                                 <div style="font-size:0.95rem; line-height:1.6">
                                     <b>Brand:</b> {row['Brand']}<br>
