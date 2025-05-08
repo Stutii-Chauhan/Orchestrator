@@ -71,7 +71,7 @@ def render_best_sellers(gender):
                                         box-shadow:2px 2px 10px #eee; height:540px; 
                                         display: flex; flex-direction: column; justify-content: space-between;">
                                 <div style='text-align:center'>
-                                    <img src="{row['ImageURL']}" style="height:220px; object-fit:contain; margin:auto; display:block; margin-bottom:30px;" />
+                                    <img src="{row['ImageURL']}" style="height:240px; object-fit:contain; margin:auto; display:block; margin-bottom:25px;" />
                                 </div>
                                 <div style="font-weight:bold; font-size:1.05rem; margin-top:10px;
                                             display: -webkit-box;
