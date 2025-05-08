@@ -25,20 +25,18 @@ def render_best_sellers(gender):
     # st.subheader(f"🔥 Best Sellers for {gender}")
     st.sidebar.header("Filter Products")
 
+    selected_brands = st.sidebar.multiselect("Brand", sorted(df["Brand"].dropna().unique()))
+    st.sidebar.markdown("**Price Band**")
+    price_band_options = sorted(df["price_band"].dropna().unique())
+    selected_priceband = []
+    
     for band in price_band_options:
         if st.sidebar.checkbox(band, key=f"price_band_{band}"):
             selected_priceband.append(band)
+    selected_dialcol = st.sidebar.multiselect("Dial Colour", sorted(df["Dial Colour"].dropna().unique()))
     
     price_min, price_max = int(df["Price"].min()), int(df["Price"].max())
     selected_price = st.sidebar.slider("Price Range", price_min, price_max, (price_min, price_max))
-
-    #Price Band
-    st.sidebar.markdown("**Price Band**")
-    price_band_options = sorted(df["price_band"].dropna().unique())
-    selected_priceband = []    
-    
-    selected_brands = st.sidebar.multiselect("Brand", sorted(df["Brand"].dropna().unique()))   #Brand
-    selected_dialcol = st.sidebar.multiselect("Dial Colour", sorted(df["Dial Colour"].dropna().unique()))  #Dial Color
 
     filtered_df = df.copy()
     if selected_brands:
