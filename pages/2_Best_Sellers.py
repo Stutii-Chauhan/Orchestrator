@@ -22,11 +22,8 @@ def render_best_sellers(gender):
     table = "Final_Watch_Dataset_Men_output" if gender == "Men" else "Final_Watch_Dataset_Women_output"
     df = load_data(table)
 
-    # st.subheader(f"🔥 Best Sellers for {gender}")
-    # st.sidebar.header("Filter Products")
-
     st.sidebar.header("Filter Products")
-    
+
     # 1. Price Band (Checkboxes)
     st.sidebar.markdown("**Price Band**")
     price_band_options = sorted(df["price_band"].dropna().unique())
@@ -34,24 +31,33 @@ def render_best_sellers(gender):
     for band in price_band_options:
         if st.sidebar.checkbox(band, key=f"price_band_{band}"):
             selected_priceband.append(band)
-    
+
     # 2. Price Range Slider
     price_min, price_max = int(df["Price"].min()), int(df["Price"].max())
     selected_price = st.sidebar.slider("Price Range", price_min, price_max, (price_min, price_max))
-    
-    # 3. Brand (Multiselect)
+
+    # 3. Brand
     selected_brands = st.sidebar.multiselect("Brand", sorted(df["Brand"].dropna().unique()))
-    
-    # 4. Dial Colour (Multiselect)
+
+    # 4. Dial Colour
     selected_dialcol = st.sidebar.multiselect("Dial Colour", sorted(df["Dial Colour"].dropna().unique()))
 
+    # Apply filters
+    filtered_df = df.copy()
+    if selected_priceband:
+        filtered_df = filtered_df[filtered_df["price_band"].isin(selected_priceband)]
+    filtered_df = filtered_df[
+        (filtered_df["Price"] >= selected_price[0]) & (filtered_df["Price"] <= selected_price[1])
+    ]
+    if selected_brands:
+        filtered_df = filtered_df[filtered_df["Brand"].isin(selected_brands)]
+    if selected_dialcol:
+        filtered_df = filtered_df[filtered_df["Dial Colour"].isin(selected_dialcol)]
 
-    # Pagination settings
+    # Pagination
     items_per_page = 6
     total_items = len(filtered_df)
     total_pages = (total_items - 1) // items_per_page + 1
-
-    # Session state for page
     if "page_number" not in st.session_state:
         st.session_state.page_number = 1
 
@@ -65,7 +71,6 @@ def render_best_sellers(gender):
         st.markdown(f"**Showing {start_idx + 1}–{min(end_idx, total_items)} of {total_items} products**")
 
         rows = list(paged_df.iterrows())
-        
         for i in range(0, len(rows), 3):
             cols = st.columns(3)
             for j in range(3):
@@ -97,13 +102,13 @@ def render_best_sellers(gender):
                                     <b>Model Number:</b> {row['Model Number']}<br>
                                     <b>Price:</b> ₹{int(row['Price'])}<br>
                                     <b>Rating:</b> {
-                                        f"{int(row['Ratings'])}/5" if pd.notna(row["Ratings"]) and row["Ratings"].is_integer()
-                                        else f"{round(row['Ratings'], 1)}/5" if pd.notna(row["Ratings"])
+                                        f"{int(row['Ratings'])}/5" if pd.notna(row['Ratings']) and row['Ratings'].is_integer()
+                                        else f"{round(row['Ratings'], 1)}/5" if pd.notna(row['Ratings'])
                                         else "N/A"
                                     }<br>
                                     <b>Discount:</b> {
-                                        "N/A" if pd.notna(row["Discount"]) and row["Discount"] in ["0", "0.0"]
-                                        else row["Discount"] if pd.notna(row["Discount"])
+                                        "No" if pd.notna(row["Discount"]) and row["Discount"] in ["0", "0.0"]
+                                        else row["Discount"] + "%" if pd.notna(row["Discount"])
                                         else "N/A"
                                     }
                                 </div>
@@ -111,25 +116,21 @@ def render_best_sellers(gender):
                             """,
                             unsafe_allow_html=True
                         )
-            # Add vertical space between rows
             st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
-        # --- Pagination Controls ---
+        # Pagination Controls
         st.markdown("<br>", unsafe_allow_html=True)
         col1, col2, col3 = st.columns([1, 6, 1])
-        
-        # Prev button
+
         with col1:
             if st.session_state.page_number > 1:
                 if st.button("⬅️ Prev"):
                     st.session_state.page_number -= 1
-        
-        # Page number buttons
+
         with col2:
             current = st.session_state.page_number
             window = 2
             page_range = list(range(max(1, current - window), min(total_pages + 1, current + window + 1)))
-        
             page_buttons = st.columns(len(page_range))
             for idx, page in enumerate(page_range):
                 if page == current:
@@ -137,8 +138,7 @@ def render_best_sellers(gender):
                 else:
                     if page_buttons[idx].button(str(page)):
                         st.session_state.page_number = page
-        
-        # Next button
+
         with col3:
             if st.session_state.page_number < total_pages:
                 if st.button("Next ➡️"):
