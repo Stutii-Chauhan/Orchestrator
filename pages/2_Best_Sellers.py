@@ -94,9 +94,9 @@ def render_best_sellers(gender):
                                         else round(row["Ratings"], 1) if pd.notna(row["Ratings"])
                                         else "N/A"
                                     }/5<br>
-                                    <b>Discount:</b> {
-                                        "N/A" if pd.notna(row["Discount"]) and row["Discount"] in ["0", "0.0"]
-                                        else row["Discount"] if pd.notna(row["Discount"])
+                                    <b>Rating:</b> {
+                                        f"{int(row['Ratings'])}/5" if pd.notna(row["Ratings"]) and row["Ratings"].is_integer()
+                                        else f"{round(row['Ratings'], 1)}/5" if pd.notna(row["Ratings"])
                                         else "N/A"
                                     }
                                 </div>
