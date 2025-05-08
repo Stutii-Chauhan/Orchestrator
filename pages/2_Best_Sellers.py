@@ -18,6 +18,7 @@ def load_data(table_name):
     return df
 
 def render_best_sellers(gender):
+    st.title(f" Best Sellers for {gender}")
     table = "Final_Watch_Dataset_Men_output" if gender == "Men" else "Final_Watch_Dataset_Women_output"
     df = load_data(table)
 
@@ -102,7 +103,7 @@ def render_best_sellers(gender):
 
 # ---- Main UI ----
 st.set_page_config(page_title="Best Sellers", page_icon="📦")
-st.title(f" Best Sellers for {gender}")
+# st.title(f" Best Sellers for {gender}")
 
 if "selected_gender" not in st.session_state:
     st.session_state.selected_gender = "Men"
