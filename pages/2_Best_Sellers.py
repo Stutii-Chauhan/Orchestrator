@@ -51,37 +51,37 @@ def render_best_sellers(gender):
     if filtered_df.empty:
         st.warning("No products found with selected filters.")
     else:
-        for i, (_, row) in enumerate(filtered_df.iterrows()):
-            col1, col2 = st.columns([1, 2])
-            with col1:
-                if pd.notna(row.get("ImageURL")):
-                    st.image(row["ImageURL"], width=140)
-                else:
-                    st.write("🖼️ Image not available")
-            with col2:
-                st.markdown(
-                    f"""<h4 style='margin-bottom:0'>
-                            <a href=\"{row['URL']}\" style='text-decoration: none; color: black;' target=\"_blank\">
-                                {row['Product Name']}
-                            </a>
-                        </h4>""",
-                    unsafe_allow_html=True,
-                )
-                st.write(f"**Brand:** {row['Brand']}")
-                st.write(f"**Model Number:** {row['Model Number']}")
-                st.write(f"**Price:** ₹{int(row['Price'])}")
-                st.write(f"**Rating:** {row['Ratings'] if pd.notna(row['Ratings']) else 'N/A'}/5")
+        for i in range(0, len(filtered_df), 3):
+            row_chunk = filtered_df.iloc[i:i+3]
+            cols = st.columns(3)
 
-                discount = row["Discount"]
-                if pd.notna(discount) and str(discount).strip().upper() != "N/A" and "%" not in str(discount):
-                    st.write(f"**Discount:** {discount}%")
-                elif pd.notna(discount) and "%" in str(discount):
-                    st.write(f"**Discount:** {discount}")
-                else:
-                    st.write("**Discount:** N/A")
+            for col, (_, row) in zip(cols, row_chunk.iterrows()):
+                with col:
+                    if pd.notna(row.get("ImageURL")):
+                        st.image(row["ImageURL"], width=140)
+                    else:
+                        st.write("🖼️ Image not available")
 
-            if i < len(filtered_df) - 1:
-                st.markdown("---")
+                    st.markdown(
+                        f"""<h4 style='margin-bottom:0'>
+                                <a href=\"{row['URL']}\" style='text-decoration: none; color: black;' target=\"_blank\">
+                                    {row['Product Name']}
+                                </a>
+                            </h4>""",
+                        unsafe_allow_html=True,
+                    )
+                    st.write(f"**Brand:** {row['Brand']}")
+                    st.write(f"**Model Number:** {row['Model Number']}")
+                    st.write(f"**Price:** ₹{int(row['Price'])}")
+                    st.write(f"**Rating:** {row['Ratings'] if pd.notna(row['Ratings']) else 'N/A'}/5")
+
+                    discount = row["Discount"]
+                    if pd.notna(discount) and str(discount).strip().upper() != "N/A" and "%" not in str(discount):
+                        st.write(f"**Discount:** {discount}%")
+                    elif pd.notna(discount) and "%" in str(discount):
+                        st.write(f"**Discount:** {discount}")
+                    else:
+                        st.write("**Discount:** N/A")
 
 # ---- Main UI ----
 st.set_page_config(page_title="Best Sellers", page_icon="📦")
@@ -93,10 +93,10 @@ if "selected_gender" not in st.session_state:
 
 # Sidebar gender selector
 st.sidebar.markdown("### Select Gender")
-st.sidebar.radio(
+st.session_state.selected_gender = st.sidebar.radio(
     "Choose Best Seller Category",
     ["Men", "Women"],
-    key="selected_gender"
+    index=["Men", "Women"].index(st.session_state.selected_gender)
 )
 
 # Render based on gender selection
