@@ -58,6 +58,7 @@ def render_best_sellers(gender):
         st.markdown(f"**Showing {start_idx + 1}–{min(end_idx, total_items)} of {total_items} products**")
 
         rows = list(paged_df.iterrows())
+        
         for i in range(0, len(rows), 3):
             cols = st.columns(3)
             for j in range(3):
@@ -91,7 +92,7 @@ def render_best_sellers(gender):
                             """,
                             unsafe_allow_html=True
                         )
-
+        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
         # --- Pagination Controls ---
         # --- Pagination Controls ---
         st.markdown("<br>", unsafe_allow_html=True)
