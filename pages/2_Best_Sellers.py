@@ -69,7 +69,7 @@ def render_best_sellers(gender):
                             <div style="border:1px solid #ddd; padding:15px; border-radius:8px; 
                                         box-shadow:2px 2px 10px #eee; min-height:480px">
                                 <div style='text-align:center'>
-                                    <img src="{row['ImageURL']}" style="height:200px; object-fit:contain; margin:auto;" />
+                                    <img src="{row['ImageURL']}" style="height:180px; object-fit:contain; margin:auto; display:block; margin-bottom:10px;" />
                                 </div>
                                 <div style="font-weight:bold; font-size:1.05rem; margin-top:10px;
                                             display: -webkit-box;
