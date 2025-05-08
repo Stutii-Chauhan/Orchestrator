@@ -170,7 +170,7 @@ st.set_page_config(page_title="Best Sellers", page_icon="📦")
 if "selected_gender" not in st.session_state:
     st.session_state.selected_gender = "Men"
 
-st.sidebar.markdown("### Select Gender")
-st.sidebar.radio("Choose Best Seller Category", ["Men", "Women"], key="selected_gender")
+st.sidebar.markdown("### Gender Category")
+st.sidebar.radio("Select the Gender", ["Men", "Women"], key="selected_gender")
 
 render_best_sellers(st.session_state.selected_gender)
