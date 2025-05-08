@@ -23,31 +23,28 @@ def render_best_sellers(gender):
     df = load_data(table)
 
     # st.subheader(f"🔥 Best Sellers for {gender}")
-    st.sidebar.header("Filter Products")
+    # st.sidebar.header("Filter Products")
 
-    selected_brands = st.sidebar.multiselect("Brand", sorted(df["Brand"].dropna().unique()))
+    st.sidebar.header("Filter Products")
+    
+    # 1. Price Band (Checkboxes)
     st.sidebar.markdown("**Price Band**")
     price_band_options = sorted(df["price_band"].dropna().unique())
     selected_priceband = []
-    
     for band in price_band_options:
         if st.sidebar.checkbox(band, key=f"price_band_{band}"):
             selected_priceband.append(band)
-    selected_dialcol = st.sidebar.multiselect("Dial Colour", sorted(df["Dial Colour"].dropna().unique()))
     
+    # 2. Price Range Slider
     price_min, price_max = int(df["Price"].min()), int(df["Price"].max())
     selected_price = st.sidebar.slider("Price Range", price_min, price_max, (price_min, price_max))
+    
+    # 3. Brand (Multiselect)
+    selected_brands = st.sidebar.multiselect("Brand", sorted(df["Brand"].dropna().unique()))
+    
+    # 4. Dial Colour (Multiselect)
+    selected_dialcol = st.sidebar.multiselect("Dial Colour", sorted(df["Dial Colour"].dropna().unique()))
 
-    filtered_df = df.copy()
-    if selected_brands:
-        filtered_df = filtered_df[filtered_df["Brand"].isin(selected_brands)]
-    if selected_dialcol:
-        filtered_df = filtered_df[filtered_df["Dial Colour"].isin(selected_dialcol)]
-    if selected_priceband:
-        filtered_df = filtered_df[filtered_df["price_band"].isin(selected_priceband)]
-    filtered_df = filtered_df[
-        (filtered_df["Price"] >= selected_price[0]) & (filtered_df["Price"] <= selected_price[1])
-    ]
 
     # Pagination settings
     items_per_page = 6
