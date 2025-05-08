@@ -92,11 +92,11 @@ def render_best_sellers(gender):
                                     <b>Rating:</b> {
                                         f"{int(row['Ratings'])}/5" if pd.notna(row["Ratings"]) and row["Ratings"].is_integer()
                                         else f"{round(row['Ratings'], 1)}/5" if pd.notna(row["Ratings"])
-                                        else "N/A"<br>
-                                    }
+                                        else "N/A"
+                                    }<br>
                                     <b>Discount:</b> {
-                                        "No" if pd.notna(row["Discount"]) and row["Discount"] in ["0", "0.0"]
-                                        else row["Discount"] + "%" if pd.notna(row["Discount"])
+                                        "N/A" if pd.notna(row["Discount"]) and row["Discount"] in ["0", "0.0"]
+                                        else row["Discount"] if pd.notna(row["Discount"])
                                         else "N/A"
                                     }
                                 </div>
@@ -107,7 +107,6 @@ def render_best_sellers(gender):
             # Add vertical space between rows
             st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
-        # --- Pagination Controls ---
         # --- Pagination Controls ---
         st.markdown("<br>", unsafe_allow_html=True)
         col1, col2, col3 = st.columns([1, 6, 1])
