@@ -23,7 +23,7 @@ def render_best_sellers(gender):
     table = "Final_Watch_Dataset_Men_output" if gender == "Men" else "Final_Watch_Dataset_Women_output"
     df = load_data(table)
 
-    # st.subheader(f"🔥 Best Sellers for {gender}")
+    st.subheader(f"🔥 Best Sellers for {gender}")
     st.sidebar.header("Filter Products")
 
     selected_brands = st.sidebar.multiselect(
@@ -47,9 +47,7 @@ def render_best_sellers(gender):
         (filtered_df["Price"] >= selected_price[0]) & (filtered_df["Price"] <= selected_price[1])
     ]
 
-#Display
-
-# Display
+    # Display
     if filtered_df.empty:
         st.warning("No products found with selected filters.")
     else:
@@ -73,7 +71,7 @@ def render_best_sellers(gender):
                 st.write(f"**Model Number:** {row['Model Number']}")
                 st.write(f"**Price:** ₹{int(row['Price'])}")
                 st.write(f"**Rating:** {row['Ratings'] if pd.notna(row['Ratings']) else 'N/A'}/5")
-                
+
                 discount = row["Discount"]
                 if pd.notna(discount) and str(discount).strip().upper() != "N/A" and "%" not in str(discount):
                     st.write(f"**Discount:** {discount}%")
@@ -81,8 +79,7 @@ def render_best_sellers(gender):
                     st.write(f"**Discount:** {discount}")
                 else:
                     st.write("**Discount:** N/A")
-    
-            # Divider between watches (except after the last one)
+
             if i < len(filtered_df) - 1:
                 st.markdown("---")
 
@@ -90,18 +87,14 @@ def render_best_sellers(gender):
 st.set_page_config(page_title="Best Sellers", page_icon="📦")
 st.title("📦 Explore Best Sellers")
 
-# Session variable to store gender selection
-if "selected_gender" not in st.session_state:
-    st.session_state.selected_gender = None
+# ---- Sidebar Dropdown for Gender ----
+st.sidebar.subheader("Select Gender")
+gender_selection = st.sidebar.radio(
+    "Choose Best Seller Category",
+    options=["Men", "Women"],
+    index=0,
+    key="selected_gender"
+)
 
-col1, col2 = st.columns([1, 1])
-with col1:
-    if st.button("🕺 Best Sellers for Men"):
-        st.session_state.selected_gender = "Men"
-with col2:
-    if st.button("💃 Best Sellers for Women"):
-        st.session_state.selected_gender = "Women"
-
-# Render selected gender
-if st.session_state.selected_gender:
-    render_best_sellers(st.session_state.selected_gender)
+# ---- Render Watches ----
+render_best_sellers(st.session_state.selected_gender)
