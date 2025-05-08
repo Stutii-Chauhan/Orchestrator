@@ -112,6 +112,21 @@ def apply_fallback_specs(final_df: pd.DataFrame, filled_table_name: str, engine,
     merged_df.drop(columns=[col for col in merged_df.columns if col.endswith("_filled")], inplace=True)
 
     return merged_df
+
+##brand info
+
+def extract_brand_conditionally(row):
+    product_name = str(row["Product Name"]).lower()
+    brand = str(row["Brand"]).lower()
+
+    if "xylys" in product_name:
+        return "Titan XYLYS"
+    elif "edge" in product_name and "titan" in brand:
+        return "Titan Edge"
+    elif "raga" in product_name and "titan" in brand:
+        return "Titan Raga"
+    else:
+        return row["Brand"]
     
 # -------------------------------------
 # Processing Function
@@ -140,6 +155,9 @@ def process_watch_table(source_table: str, filled_table: str, output_table: str)
 
     # Fill missing specs from fallback table
     final_df = apply_fallback_specs(final_df, filled_table, engine)
+
+    # Normalize brand using the conditional rules
+    final_df["Brand"] = final_df.apply(extract_brand_conditionally, axis=1)
 
     # ----------------------------
     # Normalize units consistently
