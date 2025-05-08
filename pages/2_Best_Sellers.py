@@ -26,13 +26,11 @@ def render_best_sellers(gender):
     st.subheader(f"🔥 Best Sellers for {gender}")
     st.sidebar.header("Filter Products")
 
-    selected_brands = st.sidebar.multiselect("Brand", options=sorted(df["Brand"].dropna().unique()))
-    selected_materials = st.sidebar.multiselect("Price Band", options=sorted(df["price_band"].dropna().unique()))
-
+    selected_brands = st.sidebar.multiselect("Brand", sorted(df["Brand"].dropna().unique()))
+    selected_materials = st.sidebar.multiselect("Price Band", sorted(df["price_band"].dropna().unique()))
     price_min, price_max = int(df["Price"].min()), int(df["Price"].max())
     selected_price = st.sidebar.slider("Price Range", price_min, price_max, (price_min, price_max))
 
-    # Filtering
     filtered_df = df.copy()
     if selected_brands:
         filtered_df = filtered_df[filtered_df["Brand"].isin(selected_brands)]
@@ -42,7 +40,6 @@ def render_best_sellers(gender):
         (filtered_df["Price"] >= selected_price[0]) & (filtered_df["Price"] <= selected_price[1])
     ]
 
-    # Display
     if filtered_df.empty:
         st.warning("No products found with selected filters.")
     else:
@@ -53,43 +50,39 @@ def render_best_sellers(gender):
                 if i + j < len(rows):
                     _, row = rows[i + j]
                     with cols[j]:
-                        if pd.notna(row.get("ImageURL")):
-                            st.image(row["ImageURL"], width=160)
-                        else:
-                            st.write("🖼️ Image not available")
-
-                        product_name = row['Product Name']
-                        display_name = product_name[:60] + "..." if len(product_name) > 60 else product_name
-
                         st.markdown(
                             f"""
-                            <div style='line-height: 1.4; min-height: 60px; font-size: 1.1rem; font-weight: bold'>
-                                {display_name}
-                            </div>
-                            <div style='line-height: 1.6; font-size: 0.95rem'>
-                                <b>Brand:</b> {row['Brand']}<br>
-                                <b>Model Number:</b> {row['Model Number']}<br>
-                                <b>Price:</b> ₹{int(row['Price'])}<br>
-                                <b>Rating:</b> {row['Ratings'] if pd.notna(row['Ratings']) else 'N/A'}/5<br>
-                                <b>Discount:</b> {str(row['Discount']) if pd.notna(row['Discount']) else 'N/A'}
+                            <div style="border:1px solid #ddd; padding:15px; border-radius:8px; 
+                                        box-shadow:2px 2px 10px #eee; min-height:480px">
+                                <div style='text-align:center'>
+                                    <img src="{row['ImageURL']}" width="140"/>
+                                </div>
+                                <div style="font-weight:bold; font-size:1.05rem; margin-top:10px; 
+                                            min-height:60px; overflow:hidden; text-overflow:ellipsis">
+                                    {row['Product Name'][:70] + ('...' if len(row['Product Name']) > 70 else '')}
+                                </div>
+                                <div style="font-size:0.95rem; line-height:1.6">
+                                    <b>Brand:</b> {row['Brand']}<br>
+                                    <b>Model Number:</b> {row['Model Number']}<br>
+                                    <b>Price:</b> ₹{int(row['Price'])}<br>
+                                    <b>Rating:</b> {row['Ratings'] if pd.notna(row['Ratings']) else 'N/A'}/5<br>
+                                    <b>Discount:</b> {str(row['Discount']) if pd.notna(row['Discount']) else 'N/A'}
+                                </div>
                             </div>
                             """,
                             unsafe_allow_html=True
                         )
-            # Row divider after every set of 2
-            st.markdown("<hr style='margin-top: 20px; margin-bottom: 20px;'>", unsafe_allow_html=True)
+            # Spacing between rows
+            st.markdown("<div style='margin-bottom: 35px;'></div>", unsafe_allow_html=True)
 
 # ---- Main UI ----
 st.set_page_config(page_title="Best Sellers", page_icon="📦")
 st.title("📦 Explore Best Sellers")
 
-# Session default initialization
 if "selected_gender" not in st.session_state:
     st.session_state.selected_gender = "Men"
 
-# Sidebar gender selector
 st.sidebar.markdown("### Select Gender")
 st.sidebar.radio("Choose Best Seller Category", ["Men", "Women"], key="selected_gender")
 
-# Render based on gender selection
 render_best_sellers(st.session_state.selected_gender)
