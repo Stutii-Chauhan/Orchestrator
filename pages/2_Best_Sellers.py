@@ -72,10 +72,10 @@ def render_best_sellers(gender):
                                         display: flex; flex-direction: column; justify-content: space-between;">
                                 <div style='text-align:center'>
                                     <a href="{row['URL']}" target="_blank">
-                                        <img src="{row['ImageURL']}" style="height:230px; object-fit:contain; margin:auto; display:block; margin-bottom:20px;" />
+                                        <img src="{row['ImageURL']}" style="height:240px; object-fit:contain; margin:auto; display:block; margin-bottom:15px;" />
                                     </a>
                                 </div>
-                                <div style="font-weight:bold; font-size:1.05rem; margin-top:10px;
+                                <div style="font-weight:bold; font-size:1.05rem; margin-top:7.5px;
                                             display: -webkit-box;
                                             -webkit-line-clamp: 2;
                                             -webkit-box-orient: vertical;
