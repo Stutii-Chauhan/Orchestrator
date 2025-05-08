@@ -26,15 +26,23 @@ def render_best_sellers(gender):
     st.sidebar.header("Filter Products")
 
     selected_brands = st.sidebar.multiselect("Brand", sorted(df["Brand"].dropna().unique()))
-    selected_materials = st.sidebar.multiselect("Price Band", sorted(df["price_band"].dropna().unique()))
+    #selected_priceband = st.sidebar.multiselect("Price Band", sorted(df["price_band"].dropna().unique()))
+    st.sidebar.markdown("**Price Band**")
+    price_band_options = sorted(df["price_band"].dropna().unique())
+    selected_priceband = []
+    
+    for band in price_band_options:
+        if st.sidebar.checkbox(band, key=f"price_band_{band}"):
+            selected_priceband.append(band)
+    
     price_min, price_max = int(df["Price"].min()), int(df["Price"].max())
     selected_price = st.sidebar.slider("Price Range", price_min, price_max, (price_min, price_max))
 
     filtered_df = df.copy()
     if selected_brands:
         filtered_df = filtered_df[filtered_df["Brand"].isin(selected_brands)]
-    if selected_materials:
-        filtered_df = filtered_df[filtered_df["price_band"].isin(selected_materials)]
+    if selected_priceband:
+        filtered_df = filtered_df[filtered_df["price_band"].isin(selected_priceband)]
     filtered_df = filtered_df[
         (filtered_df["Price"] >= selected_price[0]) & (filtered_df["Price"] <= selected_price[1])
     ]
