@@ -132,11 +132,13 @@ def extract_brand_conditionally(row):
 # Processing Function
 # -------------------------------------
 def process_watch_table(source_table: str, filled_table: str, output_table: str):
+  
     df = pd.read_sql_table(source_table, con=engine)
     
 # Drop rows where 'product_name' contains "couple" (case-insensitive)
     
     df = df[~df["product_name"].str.contains("couple", case=False, na=False)]
+    df = df.reset_index(drop=True)
     parsed_specs = df['specs'].apply(parse_specs)
 
     structured_rows = []
