@@ -88,18 +88,45 @@ def render_best_sellers(gender):
                         )
 
         # --- Pagination Controls ---
+        # --- Pagination Controls ---
         st.markdown("<br>", unsafe_allow_html=True)
-        col1, col2, col3 = st.columns([1, 2, 1])
+        col1, col2, col3 = st.columns([1, 4, 1])
+        
+        # Go to Previous
         with col1:
             if st.session_state.page_number > 1:
                 if st.button("⬅️ Prev"):
                     st.session_state.page_number -= 1
+        
+        # Center: Page numbers
         with col2:
-            st.markdown(f"<div style='text-align:center; font-weight:bold;'>Page {st.session_state.page_number} of {total_pages}</div>", unsafe_allow_html=True)
+            page_links = []
+            for i in range(1, total_pages + 1):
+                if i == st.session_state.page_number:
+                    page_links.append(f"<b>{i}</b>")
+                else:
+                    page_links.append(f"<a href='#{i}' onclick='document.getElementById(\"page_{i}\").click(); return false;'>{i}</a>")
+        
+            st.markdown(
+                f"""
+                <div style='text-align: center; font-size: 16px;'>
+                    {" | ".join(page_links)}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        
+            # Invisible buttons for logic (streamlit hack)
+            for i in range(1, total_pages + 1):
+                if st.button("", key=f"page_{i}", help=f"Go to page {i}"):
+                    st.session_state.page_number = i
+        
+        # Go to Next
         with col3:
             if st.session_state.page_number < total_pages:
                 if st.button("Next ➡️"):
                     st.session_state.page_number += 1
+
 
 # ---- Main UI ----
 st.set_page_config(page_title="Best Sellers", page_icon="📦")
