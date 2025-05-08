@@ -68,7 +68,8 @@ def render_best_sellers(gender):
                         st.markdown(
                             f"""
                             <div style="border:1px solid #ddd; padding:15px; border-radius:8px; 
-                                        box-shadow:2px 2px 10px #eee; min-height:480px">
+                                        box-shadow:2px 2px 10px #eee; height:540px; 
+                                        display: flex; flex-direction: column; justify-content: space-between;">
                                 <div style='text-align:center'>
                                     <img src="{row['ImageURL']}" style="height:220px; object-fit:contain; margin:auto; display:block; margin-bottom:30px;" />
                                 </div>
@@ -78,7 +79,8 @@ def render_best_sellers(gender):
                                             -webkit-box-orient: vertical;
                                             overflow: hidden;
                                             height: 3em;
-                                            line-height: 1.5em;">
+                                            line-height: 1.5em;"
+                                     title="{row['Product Name']}">
                                     {row['Product Name']}
                                 </div>
                                 <div style="font-size:0.95rem; line-height:1.6">
@@ -92,7 +94,9 @@ def render_best_sellers(gender):
                             """,
                             unsafe_allow_html=True
                         )
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+            # Add vertical space between rows
+            st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+
         # --- Pagination Controls ---
         # --- Pagination Controls ---
         st.markdown("<br>", unsafe_allow_html=True)
