@@ -125,7 +125,7 @@ def render_best_sellers(gender):
                                     }<br>
                                     <b>Discount:</b> {
                                         "No" if pd.notna(row["Discount"]) and row["Discount"] in ["0", "0.0"]
-                                        else row["Discount"] + "%" if pd.notna(row["Discount"])
+                                        else row["Discount"] if pd.notna(row["Discount"])
                                         else "N/A"
                                     }
                                 </div>
