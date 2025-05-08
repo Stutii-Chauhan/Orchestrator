@@ -45,13 +45,19 @@ def render_best_sellers(gender):
     df["Dial Colour"] = df["Dial Colour"].str.strip().str.lower().str.title()
     selected_dialcol = st.sidebar.multiselect("Dial Colour", sorted(df["Dial Colour"].dropna().unique()))
 
-    # 5. Band Colour
+    # 5. Dial Shape
+    df["Case Shape"] = df["Case Shape"].str.strip().str.lower().str.title()
+    selected_dialshape = st.sidebar.multiselect("Dial Shape", sorted(df["Case Shape"].dropna().unique()))
+    
+    # 6. Band Colour
     df["Band Colour"] = df["Band Colour"].str.strip().str.lower().str.title()
     selected_bandcol = st.sidebar.multiselect("Band Colour", sorted(df["Band Colour"].dropna().unique()))
 
-    # 6. Dial Shape
-    df["Case Shape"] = df["Case Shape"].str.strip().str.lower().str.title()
-    selected_dialshape = st.sidebar.multiselect("Dial Shape", sorted(df["Case Shape"].dropna().unique()))
+    # 7. Band Material
+    df["Band Material"] = df["Band Material"].str.strip().str.lower().str.title()
+    selected_bandmaterial = st.sidebar.multiselect("Band Material", sorted(df["Band Material"].dropna().unique()))
+
+
 
     # Apply filters
     filtered_df = df.copy()
@@ -68,8 +74,8 @@ def render_best_sellers(gender):
         filtered_df = filtered_df[filtered_df["Band Colour"].isin(selected_bandcol)]
     if selected_dialshape:
         filtered_df = filtered_df[filtered_df["Case Shape"].isin(selected_dialshape)]
-
-
+    if selected_bandmaterial:
+        filtered_df = filtered_df[filtered_df["Band Material"].isin(selected_bandmaterial)]
 
     # Pagination
     items_per_page = 6
