@@ -57,7 +57,10 @@ def render_best_sellers(gender):
     df["Band Material"] = df["Band Material"].str.strip().str.lower().str.title()
     selected_bandmaterial = st.sidebar.multiselect("Band Material", sorted(df["Band Material"].dropna().unique()))
 
-
+    # 8. Movement
+    df["Movement"] = df["Movement"].str.strip().str.lower().str.title()
+    selected_movement = st.sidebar.multiselect("Movement", sorted(df["Movement"].dropna().unique()))
+    
 
     # Apply filters
     filtered_df = df.copy()
@@ -76,6 +79,8 @@ def render_best_sellers(gender):
         filtered_df = filtered_df[filtered_df["Case Shape"].isin(selected_dialshape)]
     if selected_bandmaterial:
         filtered_df = filtered_df[filtered_df["Band Material"].isin(selected_bandmaterial)]
+    if selected_movement:
+        filtered_df = filtered_df[filtered_df["Movement"].isin(selected_movement)]
 
     # Pagination
     items_per_page = 6
