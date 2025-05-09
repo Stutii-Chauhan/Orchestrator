@@ -45,6 +45,7 @@ def generate_sql(user_query):
     # Rules for selecting the correct table
     table_guidance = """
 The tables contain watch data from Amazon across brands.
+Do NOT access or reference any data from the table rows. Only use table names and their column names provided above.
 
 Refer to the user’s question and select the correct table using the rules below:
 
