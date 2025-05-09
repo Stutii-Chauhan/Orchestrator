@@ -146,27 +146,59 @@ def render_best_sellers(gender):
                         )
             st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
-        # Pagination Controls
+        # --- Pagination Controls ---
         st.markdown("<br>", unsafe_allow_html=True)
         col1, col2, col3 = st.columns([1, 6, 1])
-
+        
         with col1:
             if st.session_state.page_number > 1:
                 if st.button("⬅️ Prev"):
                     st.session_state.page_number -= 1
-
+        
         with col2:
             current = st.session_state.page_number
-            window = 2
-            page_range = list(range(max(1, current - window), min(total_pages + 1, current + window + 1)))
-            page_buttons = st.columns(len(page_range))
-            for idx, page in enumerate(page_range):
-                if page == current:
-                    page_buttons[idx].button(f"• {page} •", disabled=True)
+            window_size = 2
+            max_display = 5
+        
+            def render_page_button(p):
+                if p == current:
+                    st.markdown(f"<span style='margin:0 6px; font-weight:bold'>[{p}]</span>", unsafe_allow_html=True)
                 else:
-                    if page_buttons[idx].button(str(page)):
-                        st.session_state.page_number = page
-
+                    if st.button(str(p), key=f"page_{p}"):
+                        st.session_state.page_number = p
+        
+            page_range = list(range(1, total_pages + 1))
+            display_range = []
+        
+            if total_pages <= max_display:
+                display_range = page_range
+            else:
+                if current <= window_size + 1:
+                    display_range = page_range[:max_display]
+                elif current >= total_pages - window_size:
+                    display_range = page_range[-max_display:]
+                else:
+                    display_range = list(range(current - window_size, current + window_size + 1))
+        
+            page_links = ""
+            if 1 not in display_range:
+                page_links += f"[1] "
+                if 2 not in display_range:
+                    page_links += "... "
+        
+            for p in display_range:
+                if p == current:
+                    page_links += f"<b>{p}</b> "
+                else:
+                    page_links += f"[{p}] "
+        
+            if total_pages not in display_range:
+                if total_pages - 1 not in display_range:
+                    page_links += "... "
+                page_links += f"[{total_pages}]"
+        
+            st.markdown(f"<div style='text-align:center'>{page_links}</div>", unsafe_allow_html=True)
+        
         with col3:
             if st.session_state.page_number < total_pages:
                 if st.button("Next ➡️"):
