@@ -100,19 +100,19 @@ def render_best_sellers(gender):
     
         rows = list(paged_df.iterrows())
         for i in range(0, len(rows), 4):
-            cols = st.columns([1.3, 1.3, 1.3, 1.3])  # slightly wider boxes
+            cols = st.columns([1, 1, 1, 1], gap="large")  # Added spacing between columns
             for j in range(4):
                 if i + j < len(rows):
                     _, row = rows[i + j]
                     with cols[j]:
                         st.markdown(
                             f"""
-                            <div style="width: 260px; margin: auto; border:1px solid #ddd; padding:15px; border-radius:8px; 
-                                        box-shadow:2px 2px 10px #eee; height:540px; 
-                                        display: flex; flex-direction: column; justify-content: space-between;">
+                            <div style="background-color:white; padding:20px; border-radius:10px; 
+                                        box-shadow:0 2px 8px rgba(0,0,0,0.07); height:580px; 
+                                        display:flex; flex-direction:column; justify-content:space-between;">
                                 <div style='text-align:center'>
                                     <a href="{row['URL']}" target="_blank">
-                                        <img src="{row['ImageURL']}" style="height:240px; object-fit:contain; margin:auto; display:block; margin-bottom:15px;" />
+                                        <img src="{row['ImageURL']}" style="height:260px; object-fit:contain; margin:auto; display:block; margin-bottom:15px;" />
                                     </a>
                                 </div>
                                 <div style="font-weight:bold; font-size:1.05rem; margin-top:7.5px;
@@ -144,7 +144,8 @@ def render_best_sellers(gender):
                             """,
                             unsafe_allow_html=True
                         )
-            st.markdown("<div style='height: 24px;'></div>", unsafe_allow_html=True)
+            st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
+
 
 
         # --- Pagination Controls ---
