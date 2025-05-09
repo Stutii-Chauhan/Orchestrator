@@ -44,7 +44,8 @@ def generate_sql(user_query):
     The tables contain watches data from Amazon across brands.
     Refer the user’s question to the right table based on these rules:
     
-    - If the question mentions products, top products, product count, products per brand, or products across price bands or buckets, use the table: All - Product Count_output
+    - 1. If the question mentions **product count**, **products per brand**, **number of products**, **total products**, or **products across price bands/buckets** → use: `All - Product Count_output`
+     Do **not** use `Top 1000 - Product Count_output` unless the question specifically mentions **Top 1000**
     - If question mentions **Men** or **male**, use `Final_Watch_Dataset_Men_output`
     - If question mentions **Women** or **female**, use `Final_Watch_Dataset_Women_output`
     - If it’s about **Price Bands** or **Price Ranges**, use the *_price_range_top100_output tables
