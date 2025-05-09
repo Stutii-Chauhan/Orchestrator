@@ -22,6 +22,21 @@ def render_best_sellers(gender):
     table = "Final_Watch_Dataset_Men_output" if gender == "Men" else "Final_Watch_Dataset_Women_output"
     df = load_data(table)
 
+    if st.sidebar.button("✅ Apply Filters"):
+        st.session_state.page_number = 1
+        filtered_df = df.copy()
+        if selected_brands:
+            filtered_df = filtered_df[filtered_df["Brand"].isin(selected_brands)]
+        if selected_materials:
+            filtered_df = filtered_df[filtered_df["price_band"].isin(selected_materials)]
+        filtered_df = filtered_df[
+            (filtered_df["Price"] >= selected_price[0]) & (filtered_df["Price"] <= selected_price[1])
+        ]
+        st.session_state.filtered_df = filtered_df
+
+    if "filtered_df" in st.session_state:
+        render_results(st.session_state.filtered_df)
+    
     st.sidebar.header("Filter Products")
 
     # 1. Price Band (Checkboxes)
