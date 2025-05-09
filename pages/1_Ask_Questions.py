@@ -48,7 +48,7 @@ The tables contain watch data from Amazon across brands.
 
 Refer to the user’s question and select the correct table using the rules below:
 
-1. If the question mentions product count, products per brand, number of products, total products, or products across price bands or buckets → use: `All - Product Count_output`
+1. If the question mentions dominant brand/brands, product count, products per brand, number of products, total products, or products across price bands or buckets → use: `All - Product Count_output`
    Do NOT use `Top 1000 - Product Count_output` unless the question specifically mentions Top 1000.
 
 2. If the question mentions SKU count, SKUs per brand, or total SKUs → use: `All - SKU Count_output`, or gender-specific variants if mentioned.
