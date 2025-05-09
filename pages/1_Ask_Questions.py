@@ -43,8 +43,16 @@ def generate_sql(user_query):
     table_guidance = """
     The tables contain watches data from Amazon across brands.
     Refer the user’s question to the right table based on these rules:
-    ...
-    """  # (Shortened here for brevity; you can paste the full instructions in your own version)
+    
+    - If the question mentions products, top products, product count, products per brand, or products across price bands or buckets, use the table: All - Product Count_output
+    - If question mentions **Men** or **male**, use `Final_Watch_Dataset_Men_output`
+    - If question mentions **Women** or **female**, use `Final_Watch_Dataset_Women_output`
+    - If it’s about **Price Bands** or **Price Ranges**, use the *_price_range_top100_output tables
+    - For **Top 1000** product or SKU counts, use `Top 1000 - ...` tables
+    - For **Overall or Gender-based SKU/Product Counts**, use `All`, `Men`, or `Women` Count tables
+    - If question is about **Best Rank**, use `Best Rank_All_output`
+    - If question is very generic about prices or brands, use `product_price_cleaned_output`
+    
     prompt = f"""
 You are a SQL expert agent. Your job is to pick the right table and generate SQL based on the user's question.
 
