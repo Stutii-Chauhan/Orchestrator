@@ -100,32 +100,30 @@ def render_best_sellers(gender):
     
         rows = list(paged_df.iterrows())
         for i in range(0, len(rows), 4):
-            cols = st.columns([1, 1, 1, 1], gap="large")  # Added spacing between columns
+            cols = st.columns([1, 1, 1, 1], gap="large")
             for j in range(4):
                 if i + j < len(rows):
                     _, row = rows[i + j]
                     with cols[j]:
                         st.markdown(
                             f"""
-                            <div style="background-color:white; padding:20px; border-radius:10px; 
-                                        box-shadow:0 2px 8px rgba(0,0,0,0.07); height:580px; 
-                                        display:flex; flex-direction:column; justify-content:space-between;">
+                            <div style="background-color:white; padding:25px; border-radius:12px; 
+                                        box-shadow:0 2px 10px rgba(0,0,0,0.08); height:600px; 
+                                        display:flex; flex-direction:column; justify-content:space-between; 
+                                        width:100%;">
                                 <div style='text-align:center'>
                                     <a href="{row['URL']}" target="_blank">
-                                        <img src="{row['ImageURL']}" style="height:260px; object-fit:contain; margin:auto; display:block; margin-bottom:15px;" />
+                                        <img src="{row['ImageURL']}" style="height:250px; object-fit:contain; margin:auto; display:block; margin-bottom:15px;" />
                                     </a>
                                 </div>
-                                <div style="font-weight:bold; font-size:1.05rem; margin-top:7.5px;
-                                            display: -webkit-box;
-                                            -webkit-line-clamp: 2;
-                                            -webkit-box-orient: vertical;
-                                            overflow: hidden;
-                                            height: 3em;
-                                            line-height: 1.5em;"
+                                <div style="font-weight:600; font-size:1.1rem; margin-top:10px;
+                                            display:-webkit-box; -webkit-line-clamp: 2;
+                                            -webkit-box-orient: vertical; overflow: hidden;
+                                            height: 3em; line-height: 1.5em;"
                                      title="{row['Product Name']}">
                                     {row['Product Name']}
                                 </div>
-                                <div style="font-size:0.95rem; line-height:1.6">
+                                <div style="font-size:1rem; line-height:1.7; margin-top:10px;">
                                     <b>Brand:</b> {row['Brand']}<br>
                                     <b>Model Number:</b> {row['Model Number']}<br>
                                     <b>Price:</b> ₹{int(row['Price'])}<br>
@@ -144,7 +142,8 @@ def render_best_sellers(gender):
                             """,
                             unsafe_allow_html=True
                         )
-            st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
+            st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
+
 
 
 
