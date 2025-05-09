@@ -66,6 +66,9 @@ Refer to the user’s question and select the correct table using the rules belo
    - `Final_Watch_Dataset_Women_output` for women's watches
 
 7. For general product listings, price, discount, or brand comparisons → use: `product_price_cleaned_output`
+
+8. If the question includes subjective terms like “top brands”, “leading brands”, or “dominant brands”, assume dominance is based on **highest product count** → use: `All - Product Count_output`
+   - Sort by `"10k–15k" + "15k–25k" + ...` if needed, or just use total sum
 """
 
     # Compose the full prompt to send to Gemini
