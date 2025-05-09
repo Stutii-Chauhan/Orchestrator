@@ -39,32 +39,52 @@ TABLE_SCHEMAS = {
 
 # ---- LLM SQL Generator ----
 def generate_sql(user_query):
+    # Table schema list as bullet points
     schema_desc = "\n".join([f"- {table}: [{', '.join(cols)}]" for table, cols in TABLE_SCHEMAS.items()])
+    
+    # Rules for selecting the correct table
     table_guidance = """
-    The tables contain watches data from Amazon across brands.
-    Refer the user’s question to the right table based on these rules:
-    
-    - 1. If the question mentions **product count**, **products per brand**, **number of products**, **total products**, or **products across price bands/buckets** → use: `All - Product Count_output`
-     Do **not** use `Top 1000 - Product Count_output` unless the question specifically mentions **Top 1000**
-    - If question mentions **Men** or **male**, use `Final_Watch_Dataset_Men_output`
-    - If question mentions **Women** or **female**, use `Final_Watch_Dataset_Women_output`
-    - If it’s about **Price Bands** or **Price Ranges**, use the *_price_range_top100_output tables
-    - For **Top 1000** product or SKU counts, use `Top 1000 - ...` tables
-    - For **Overall or Gender-based SKU/Product Counts**, use `All`, `Men`, or `Women` Count tables
-    - If question is about **Best Rank**, use `Best Rank_All_output`
-    - If question is very generic about prices or brands, use `product_price_cleaned_output`
-    
-    prompt = f"""
-You are a SQL expert agent. Your job is to pick the right table and generate SQL based on the user's question.
+The tables contain watch data from Amazon across brands.
 
+Refer to the user’s question and select the correct table using the rules below:
+
+1. If the question mentions product count, products per brand, number of products, total products, or products across price bands or buckets → use: `All - Product Count_output`
+   Do NOT use `Top 1000 - Product Count_output` unless the question specifically mentions Top 1000.
+
+2. If the question mentions SKU count, SKUs per brand, or total SKUs → use: `All - SKU Count_output`, or gender-specific variants if mentioned.
+
+3. If the question contains "Top 1000" or refers to Amazon ranking → use: `Top 1000 - Product Count_output` or `Top 1000 - SKU Count_output`
+
+4. For distribution of products across price ranges by gender:
+   - Use `men_price_range_top100_output` for men
+   - Use `women_price_range_top100_output` for women
+
+5. If the question mentions best rank or first appearance → use: `Best Rank_All_output`
+
+6. For gender-specific product details → use:
+   - `Final_Watch_Dataset_Men_output` for men's watches
+   - `Final_Watch_Dataset_Women_output` for women's watches
+
+7. For general product listings, price, discount, or brand comparisons → use: `product_price_cleaned_output`
+"""
+
+    # Compose the full prompt to send to Gemini
+    prompt = f"""
+You are a SQL expert agent working with PostgreSQL.
+
+Below are the available tables and their columns:
 {schema_desc}
 
 {table_guidance}
 
-User: {user_query}
+Now, based on the user's question below, choose the right table and generate the SQL query.
 
-SQL Query:
+User Question: {user_query}
+
+Only return the SQL query.
 """
+
+    # Call Gemini to generate the SQL
     try:
         response = model.generate_content(prompt)
         return response.text.strip()
