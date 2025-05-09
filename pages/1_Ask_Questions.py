@@ -51,7 +51,8 @@ Refer to the user’s question and select the correct table using the rules belo
 1. If the question mentions dominant brand/brands, product count, products per brand, number of products, total products, or products across price bands or buckets → use: `All - Product Count_output`
    Do NOT use `Top 1000 - Product Count_output` unless the question specifically mentions Top 1000.
 
-2. If the question mentions SKU count, SKUs per brand, or total SKUs → use: `All - SKU Count_output`, or gender-specific variants if mentioned.
+2. If the question mentions SKU count, SKU per brand, number of SKU, total SKU, or SKU across price bands or buckets → use: `All - SKU Count_output`
+   Do NOT use `Top 1000 - Product Count_output` unless the question specifically mentions Top 1000.
 
 3. If the question contains "Top 1000" or refers to Amazon ranking → use: `Top 1000 - Product Count_output` or `Top 1000 - SKU Count_output`
 
