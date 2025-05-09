@@ -69,6 +69,9 @@ Refer to the user’s question and select the correct table using the rules belo
 
 8. If the question includes subjective terms like “top brands”, “leading brands”, or “dominant brands”, assume dominance is based on **highest product count** → use: `All - Product Count_output`
    - Sort by `"10k–15k" + "15k–25k" + ...` if needed, or just use total sum
+
+9. Always try to show the comparision factor, sum, total etc. along with the output
+10. Avoid cases where Brand = "Others"
 """
 
     # Compose the full prompt to send to Gemini
