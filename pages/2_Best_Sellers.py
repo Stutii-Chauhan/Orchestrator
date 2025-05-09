@@ -83,7 +83,7 @@ def render_best_sellers(gender):
         filtered_df = filtered_df[filtered_df["Movement"].isin(selected_movement)]
 
     # Pagination
-    items_per_page = 6
+    items_per_page = 20
     total_items = len(filtered_df)
     total_pages = (total_items - 1) // items_per_page + 1
     if "page_number" not in st.session_state:
@@ -99,9 +99,9 @@ def render_best_sellers(gender):
         st.markdown(f"**Showing {start_idx + 1}–{min(end_idx, total_items)} of {total_items} products**")
 
         rows = list(paged_df.iterrows())
-        for i in range(0, len(rows), 3):
-            cols = st.columns(3)
-            for j in range(3):
+        for i in range(0, len(rows), 4):
+            cols = st.columns(4)
+            for j in range(4):
                 if i + j < len(rows):
                     _, row = rows[i + j]
                     with cols[j]:
@@ -148,7 +148,7 @@ def render_best_sellers(gender):
 
         # --- Pagination Controls ---
         st.markdown("<br>", unsafe_allow_html=True)
-        col1, col2, col3 = st.columns([1, 6, 1])
+        col1, col2, col3 = st.columns([1, 8, 1])
         
         with col1:
             if st.session_state.page_number > 1:
@@ -157,54 +157,37 @@ def render_best_sellers(gender):
         
         with col2:
             current = st.session_state.page_number
-            window_size = 2
-            max_display = 5
+            window = 2
+            total_pages = (total_items - 1) // items_per_page + 1
         
-            def render_page_button(p):
-                if p == current:
-                    st.markdown(f"<span style='margin:0 6px; font-weight:bold'>[{p}]</span>", unsafe_allow_html=True)
+            page_buttons = []
+            page_buttons.append(1)
+            if current - window > 2:
+                page_buttons.append("...")
+        
+            for p in range(max(2, current - window), min(total_pages, current + window + 1)):
+                page_buttons.append(p)
+        
+            if current + window < total_pages - 1:
+                page_buttons.append("...")
+        
+            if total_pages != 1:
+                page_buttons.append(total_pages)
+        
+            button_cols = st.columns(len(page_buttons))
+            for idx, p in enumerate(page_buttons):
+                if p == "...":
+                    button_cols[idx].markdown("**...**")
+                elif p == current:
+                    button_cols[idx].button(f"• {p} •", disabled=True)
                 else:
-                    if st.button(str(p), key=f"page_{p}"):
+                    if button_cols[idx].button(str(p)):
                         st.session_state.page_number = p
-        
-            page_range = list(range(1, total_pages + 1))
-            display_range = []
-        
-            if total_pages <= max_display:
-                display_range = page_range
-            else:
-                if current <= window_size + 1:
-                    display_range = page_range[:max_display]
-                elif current >= total_pages - window_size:
-                    display_range = page_range[-max_display:]
-                else:
-                    display_range = list(range(current - window_size, current + window_size + 1))
-        
-            page_links = ""
-            if 1 not in display_range:
-                page_links += f"[1] "
-                if 2 not in display_range:
-                    page_links += "... "
-        
-            for p in display_range:
-                if p == current:
-                    page_links += f"<b>{p}</b> "
-                else:
-                    page_links += f"[{p}] "
-        
-            if total_pages not in display_range:
-                if total_pages - 1 not in display_range:
-                    page_links += "... "
-                page_links += f"[{total_pages}]"
-        
-            st.markdown(f"<div style='text-align:center'>{page_links}</div>", unsafe_allow_html=True)
         
         with col3:
             if st.session_state.page_number < total_pages:
                 if st.button("Next ➡️"):
                     st.session_state.page_number += 1
-
-
 
 # ---- Main UI ----
 st.set_page_config(page_title="Best Sellers", page_icon="📦")
