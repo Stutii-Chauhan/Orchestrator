@@ -71,7 +71,7 @@ Refer to the user’s question and select the correct table using the rules belo
    - Sort by `"10k–15k" + "15k–25k" + ...` if needed, or just use total sum
 
 9. Always try to show the comparision factor, sum, total etc. along with the output
-10. Avoid cases where Brand = "Others"
+10. Avoid cases where Brand = "Others", unless specified explicitly
 """
 
     # Compose the full prompt to send to Gemini
