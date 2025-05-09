@@ -186,7 +186,7 @@ def render_best_sellers(gender):
                     st.session_state.page_number += 1
 
 # ---- Main UI ----
-st.set_page_config(page_title="Best Sellers", page_icon="📦")
+st.set_page_config(page_title="Best Sellers", layout="wide", page_icon="📦")
 # st.title(f" Best Sellers for {gender}")
 
 if "selected_gender" not in st.session_state:
